@@ -2,6 +2,8 @@ import { useState, type ChangeEvent } from "react";
 import Button from "../../../Components/Ui/Button";
 import Input from "../../../Components/Ui/Input";
 import { MOCK_USERS } from "../Data/MockUsers";
+import { useAuth } from "../Context/Login/UseLogin";
+
 
 interface props {
   name: string;
@@ -9,6 +11,7 @@ interface props {
 }
 
 export default function Login() {
+  const { login, loading } = useAuth();
   const [user, setUser] = useState<props>({
     name: "",
     password: "",
@@ -18,7 +21,8 @@ export default function Login() {
 
   function HandleChange(e: ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    setUser((prev) => ({ ...prev, [name]: value }));
+
+    setUser((prev) => ({ ...prev, [name]: value, }));
   }
 
   function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -34,8 +38,11 @@ export default function Login() {
     );
 
     if (!auth) {
-      setError("No ta registrao");
+      return setError("No ta registrao");
     }
+
+    login(auth);
+    console.log("Si esta registrado")
   }
   return (
     <div>

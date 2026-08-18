@@ -3,9 +3,13 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 
 import Login from './Features/Login/Components/Login.tsx';
+import LoginProvider from './Features/Login/Context/Login/LoginProvider.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Login />
+    <LoginProvider>
+      <Login />
+    </LoginProvider>
+
   </StrictMode>,
 )

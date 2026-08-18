@@ -1,7 +1,3 @@
 import { createContext } from "react";
-interface loginTypes{
-    user : string
-    password : string
-    role : "SUPER_ADMIN" | "ADMIN" | "USER"
-}
-export const loginContext = createContext<loginTypes | null>(null)
+import type { AuthContextType } from "../../../../Shared/Types";
+export const LoginContext = createContext<AuthContextType | null>(null)

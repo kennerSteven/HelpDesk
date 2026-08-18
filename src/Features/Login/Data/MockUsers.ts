@@ -1,14 +1,15 @@
-export type Role = "USER" | "AGENT" | "ADMIN";
+export type role = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
 
 export interface UserMock {
   name: string;
 
   password: string;
-  role: Role;
+  role: role;
 }
 
 export const MOCK_USERS: UserMock[] = [
   {
+    
     name: "Juan",
     password: "123456",
     role: "USER",
@@ -16,7 +17,7 @@ export const MOCK_USERS: UserMock[] = [
   {
     name: "Carlos",
     password: "123456",
-    role: "AGENT",
+    role: "USER",
   },
   {
     name: "Laura",
