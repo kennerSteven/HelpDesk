@@ -16,7 +16,7 @@ export default function Input({ name, value, onChange, type = "text", placeholde
       onChange={onChange}
       type={type}
       placeholder={placeholder}
-      className="border p-2 rounded-xl m-2 border-zinc-100 bg-zinc-50"
+      className="border p-2 rounded-xl  border-zinc-100 bg-zinc-50 w-full"
     />
   );
 }
