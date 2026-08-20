@@ -1,19 +1,22 @@
-interface Input {
+import type { ChangeEvent } from "react";
+
+interface InputProps {
   name: string;
   value: string;
-  onChange: any;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  placeholder?: string;
 }
 
-export default function Input({ value, name, onChange }: Input) {
+export default function Input({ name, value, onChange, type = "text", placeholder }: InputProps) {
   return (
-    <div className="my-2">
-      <input
-        className="border-none bg-zinc-200 rounded-md shadow-sm shadow-zinc-200"
-        type="text"
-        value={value}
-        name={name}
-        onChange={onChange}
-      />
-    </div>
+    <input
+      name={name}
+      value={value}
+      onChange={onChange}
+      type={type}
+      placeholder={placeholder}
+      className="border p-2 rounded-xl m-2 border-zinc-100 bg-zinc-50"
+    />
   );
 }

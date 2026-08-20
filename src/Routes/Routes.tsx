@@ -7,7 +7,7 @@ export default function App() {
   return (
     <main>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login/>} />
 
         <Route
           path="/"
