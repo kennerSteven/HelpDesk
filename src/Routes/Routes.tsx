@@ -1,8 +1,10 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "../Features/Login/Components/Login";
 import ProtectedRoute from "./ProtectedRoute";
-import Home from "../Home";
+
 import CreateNewUser from "../Features/Login/Components/CreateNewUser";
+import CreateTask from "../Features/Task/Components/CreateTask/CreateTask";
+import CreateCategory from "../Features/Task/Components/CreateCategory/CreateCategory";
 
 export default function App() {
   return (
@@ -15,7 +17,7 @@ export default function App() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <CreateCategory />
             </ProtectedRoute>
           }
         />

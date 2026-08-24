@@ -41,17 +41,11 @@ export default function Login() {
             </div>
 
             <div>
-              <label
-                htmlFor="name"
-                className="block mb-1.5 text-xs font-medium text-zinc-700"
-              >
-                Usuario
-              </label>
-
               <Input
-
                 name="name"
                 value={user?.name || ""}
+                label="Usuario"
+                showLabel={true}
                 placeholder="Ingresa tu usuario"
                 onChange={HandleChange}
               />
@@ -62,17 +56,11 @@ export default function Login() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block mb-1.5 text-xs font-medium text-zinc-700"
-              >
-                Contraseña
-              </label>
-
               <Input
-
                 name="password"
                 value={user.password}
+                label="Contraseña"
+                showLabel={true}
                 onChange={HandleChange}
                 type="password"
                 placeholder="Ingresa tu contraseña"

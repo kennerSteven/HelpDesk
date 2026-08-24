@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Context/Login/UseLogin";
 import type { LoginTypes } from "../Types/Types";
 import { GetStorageItem } from "../../../Utils/Storage.utils";
-import useForm from "./useForm";
-import useErrors from "./useErrors";
+import useForm from "../../../Shared/Hooks/useForm";
+import useErrors from "../../../Shared/Hooks/useErrors";
 export default function HandleLogin() {
   const navigate = useNavigate();
   const { login } = useAuth();

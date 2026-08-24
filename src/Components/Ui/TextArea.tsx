@@ -1,24 +1,23 @@
 import type { ChangeEvent } from "react";
 
-interface InputProps {
+interface TextAreaProps {
   name: string;
   value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   type?: string;
   placeholder?: string;
   label?: string;
   showLabel?: boolean;
 }
 
-export default function Input({
+export default function TextArea({
   name,
   value,
   onChange,
-  type = "text",
   placeholder,
   label,
   showLabel = false,
-}: InputProps) {
+}: TextAreaProps) {
   return (
     <div>
       {showLabel && label && (
@@ -29,14 +28,13 @@ export default function Input({
           {label}
         </label>
       )}
-      <input
+      <textarea
         id={name}
         name={name}
         value={value}
         onChange={onChange}
-        type={type}
         placeholder={placeholder}
-        className="border p-2 rounded-xl  border-zinc-100 bg-zinc-50 w-full"
+        className="border p-2 rounded-xl border-zinc-100 bg-zinc-50 w-full min-h-28 resize-y"
       />
     </div>
   );

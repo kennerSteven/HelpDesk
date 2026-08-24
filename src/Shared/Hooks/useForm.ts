@@ -4,7 +4,7 @@ export default function useForm<T>(initialValues: T) {
   const [values, setValues] = useState<T>(initialValues);
 
   function HandleChange(
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) {
     const { name, value } = e.target;
 

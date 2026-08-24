@@ -1,23 +1,54 @@
+import { useState } from "react";
 import { GetStorageItem, SetStorageItem } from "../../../Utils/Storage.utils";
-import useForm from "./useForm";
-
+import useErrors from "../../../Shared/Hooks/useErrors";
+import useForm from "../../../Shared/Hooks/useForm";
+import { useNavigate } from "react-router-dom";
 export default function useCreateUser() {
+  const { values: newUser, HandleChange } = useForm({
+    name: "",
+    role: "",
+    password: "",
+  });
+  const { errors, setErrors } = useErrors({ name: "", password: "", role: "" });
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+  function HandleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const errors = {
+      name: "",
+      password: "",
+      role: "",
+    };
 
-    const { values: newUser, HandleChange } = useForm({ name: "", role: "", password: "" })
-
-
-    function HandleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-        e.preventDefault()
-        console.log(newUser.name, newUser.password, newUser.role)
-        const users = GetStorageItem("users", []);
-        users.push(newUser);
-        SetStorageItem("users", users);
+    if (!newUser.name.trim()) {
+      errors.name = "El nombre es obligatorio.";
     }
-
-    return {
-        HandleSubmit,
-        HandleChange,
-        newUser
+    if (!newUser.password.trim()) {
+      errors.password = "La contraseña es obligatoria.";
     }
+    if (!newUser.role.trim()) {
+      errors.role = "El rol es obligatorio.";
+    }
+    setErrors(errors);
+    const hasErrors =
+      errors.name !== "" || errors.password !== "" || errors.role !== "";
+    if (hasErrors) return;
 
+    const users = GetStorageItem("users", []);
+    users.push(newUser);
+    SetStorageItem("users", users);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/login", { replace: true });
+    }, 2000);
+  }
+
+  return {
+    HandleSubmit,
+    HandleChange,
+    newUser,
+    errors,
+    loading,
+  };
 }
