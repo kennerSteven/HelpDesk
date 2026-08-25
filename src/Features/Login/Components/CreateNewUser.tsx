@@ -1,17 +1,18 @@
+
 import Button from "../../../Components/Ui/Button";
 import FieldMessageError from "../../../Components/Ui/FieldMessage";
 import Input from "../../../Components/Ui/Input";
 import Select from "../../../Components/Ui/Select";
 
+
 import useCreateUser from "../Hooks/useCreateUser";
 
-const roleOptions = {
-  "": "Seleccione una opcion",
-  SUPER_ADMIN: "Super Admin",
-  ADMIN: "Admin",
-  USER: "User",
-};
-
+const roleOptions = [
+  { value: "", label: "Seleccione una opción" },
+  { value: "SUPER_ADMIN", label: "Super Admin" },
+  { value: "ADMIN", label: "Admin" },
+  { value: "USER", label: "User" },
+];
 export default function CreateNewUser() {
   const { HandleChange, HandleSubmit, newUser, errors, loading } =
     useCreateUser();
@@ -58,7 +59,8 @@ export default function CreateNewUser() {
 
             <div>
               <div>
-                <Select
+              <div>
+                  <Select
                   name="role"
                   value={newUser.role}
                   onChange={HandleChange}
@@ -66,6 +68,8 @@ export default function CreateNewUser() {
                   objectValues={roleOptions}
                 />
                 {errors.role && <FieldMessageError message={errors.role} />}
+              </div>
+            
               </div>
             </div>
 
@@ -80,6 +84,7 @@ export default function CreateNewUser() {
           </form>
         </div>
       </div>
+  
     </div>
   );
 }

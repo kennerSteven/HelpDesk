@@ -1,6 +1,7 @@
 import useForm from "../../../Shared/Hooks/useForm";
 import useErrors from "../../../Shared/Hooks/useErrors";
 import { ValidateFields } from "../../../Utils/FieldValidate";
+import { GetStorageItem, SetStorageItem } from "../../../Utils/Storage.utils";
 
 export default function useCreateTask() {
   const taskFields = {
@@ -26,6 +27,10 @@ export default function useCreateTask() {
 
     const hasErrors = Object.values(errors).some(Boolean);
     if (hasErrors) return;
+    const taskData = GetStorageItem("task", []);
+    console.log(taskData);
+    const updatedTask = [...taskData, task];
+    SetStorageItem("task", updatedTask);
   }
   return {
     handleSubmit,

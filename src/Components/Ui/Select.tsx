@@ -1,11 +1,22 @@
 import type { SelectHTMLAttributes } from "react";
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  objectValues: Record<string, string>;
+
+interface SelectOption {
+  value:  string;
   label?: string;
 }
 
-export default function Select({ objectValues, label, ...selectProps }: SelectProps) {
+interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  objectValues: SelectOption[];
+  label?: string;
+}
+
+export default function Select({
+  objectValues,
+  label,
+  ...selectProps
+}: SelectProps) {
+  console.log(objectValues)
   return (
     <div>
       {label && (
@@ -21,10 +32,10 @@ export default function Select({ objectValues, label, ...selectProps }: SelectPr
         id={selectProps.name}
         className="border p-2 rounded-xl border-zinc-100 bg-zinc-50 w-full"
       >
-        {Object.entries(objectValues).map(([value, optionLabel]) => (
-          <option key={value} value={value}>
-            {optionLabel}
-          </option>
+        {objectValues.map((i) => (
+          
+            <option key={i.value} value={i.value}>{i.label}</option>
+     
         ))}
       </select>
     </div>

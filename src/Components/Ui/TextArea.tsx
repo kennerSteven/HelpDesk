@@ -23,7 +23,7 @@ export default function TextArea({
       {showLabel && label && (
         <label
           htmlFor={name}
-          className="block mb-1.5 text-xs font-medium text-zinc-700"
+          className="block mb-2 text-md font-medium text-zinc-700"
         >
           {label}
         </label>
