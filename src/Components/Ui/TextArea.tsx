@@ -1,9 +1,8 @@
-import type { ChangeEvent } from "react";
 
 interface TextAreaProps {
   name: string;
-  value: string;
-  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+
+  register: any;
   type?: string;
   placeholder?: string;
   label?: string;
@@ -12,8 +11,8 @@ interface TextAreaProps {
 
 export default function TextArea({
   name,
-  value,
-  onChange,
+  register,
+
   placeholder,
   label,
   showLabel = false,
@@ -31,8 +30,7 @@ export default function TextArea({
       <textarea
         id={name}
         name={name}
-        value={value}
-        onChange={onChange}
+        {...register(name)}
         placeholder={placeholder}
         className="border p-2 rounded-xl border-zinc-100 bg-zinc-50 w-full min-h-28 resize-y"
       />

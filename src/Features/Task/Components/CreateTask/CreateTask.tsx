@@ -5,13 +5,15 @@ import FieldMessageError from "../../../../Components/Ui/FieldMessage";
 import Input from "../../../../Components/Ui/Input";
 import Select from "../../../../Components/Ui/Select";
 import TextArea from "../../../../Components/Ui/TextArea";
+import { CreateTaskSchema } from "../../../../Schemas/Task.schema";
+import { GetStorageItem } from "../../../../Utils/Storage.utils";
+import { useZodForm } from "../../../../Hooks/useZodForm";
 import useCreateTask from "../../Hooks/useCreateTask";
 import CreateCategory from "../CreateCategory/CreateCategory";
-import { GetStorageItem } from "../../../../Utils/Storage.utils";
 
 interface Category {
   nameCategory: string;
-  descriptionCategory: string;
+  descriptionCategory?: string;
 }
 
 const priorityOptions = [
@@ -28,47 +30,62 @@ const statusOptions = [
   { value: "COMPLETED", label: "Completada" },
 ];
 
-export default function CreateTask() {
-  const { handleSubmit, taskError, task, HandleChange } = useCreateTask();
+interface CreateTaskProps {
+  onSuccess?: () => void;
+}
+
+export default function CreateTask({ onSuccess }: CreateTaskProps) {
+  const { HandleSubmit } = useCreateTask();
+
+  const { useAppForm } = useZodForm();
+  const { register, errors, handleSubmit, reset } = useAppForm({
+    schema: CreateTaskSchema,
+  });
+
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[]>(() =>
     GetStorageItem("category", []),
   );
 
+  console.log(categories)
+
   const categoryOptions = categories.map((category) => ({
-    value: category.nameCategory,
     label: category.nameCategory,
+    value: category.descriptionCategory,
   }));
+  
 
   return (
     <div>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit((data) => {
+          HandleSubmit(data);
+          reset();
+          onSuccess?.();
+        })}
         className="min-h-screen w-full max-w-xl mx-auto flex flex-col justify-center px-4 py-8 space-y-6 rounded-xl shadow-md shadow-zinc-200"
       >
         <div>
           <Input
             name="name"
-            value={task.name}
+            register={register}
             label="Nombre"
             showLabel={true}
-            onChange={HandleChange}
             placeholder="Nombre de la tarea"
           />
-          {taskError?.name && <FieldMessageError message={taskError.name} />}
+          {errors?.name && <FieldMessageError message={errors.name.message} />}
         </div>
 
         <div>
           <TextArea
             name="description"
-            value={task.description}
             label="Descripcion"
             showLabel={true}
-            onChange={HandleChange}
+            register={register}
             placeholder="Descripcion de la tarea"
           />
-          {taskError?.description && (
-            <FieldMessageError message={taskError.description} />
+          {errors?.description && (
+            <FieldMessageError message={errors.description.message} />
           )}
         </div>
 
@@ -76,28 +93,26 @@ export default function CreateTask() {
           <div className="flex-1">
             <Input
               name="dateInit"
-              value={task.dateInit}
+              register={register}
               label="Fecha de inicio"
               showLabel={true}
-              onChange={HandleChange}
               type="date"
             />
-            {taskError?.dateInit && (
-              <FieldMessageError message={taskError.dateInit} />
+            {errors?.dateInit && (
+              <FieldMessageError message={errors.dateInit.message} />
             )}
           </div>
 
           <div className="flex-1">
             <Input
               name="dateFinish"
-              value={task.dateFinish}
+              register={register}
               label="Fecha de finalizacion"
               showLabel={true}
-              onChange={HandleChange}
               type="date"
             />
-            {taskError?.dateFinish && (
-              <FieldMessageError message={taskError.dateFinish} />
+            {errors?.dateFinish && (
+              <FieldMessageError message={errors.dateFinish.message} />
             )}
           </div>
         </div>
@@ -105,39 +120,38 @@ export default function CreateTask() {
         <div>
           <Input
             name="photo"
-            value={task.photo}
+            register={register}
             label="Foto"
             showLabel={true}
-            onChange={HandleChange}
             placeholder="URL de la foto"
           />
-          {taskError?.photo && <FieldMessageError message={taskError.photo} />}
+          {errors?.photo && (
+            <FieldMessageError message={errors.photo.message} />
+          )}
         </div>
 
         <div className="flex gap-4">
           <div className="flex-1">
             <Select
               name="priority"
-              value={task.priority}
+              register={register}
               label="Prioridad"
-              onChange={HandleChange}
               objectValues={priorityOptions}
             />
-            {taskError?.priority && (
-              <FieldMessageError message={taskError.priority} />
+            {errors?.priority && (
+              <FieldMessageError message={errors.priority.message} />
             )}
           </div>
 
           <div className="flex-1">
             <Select
               name="status"
-              value={task.status}
+              register={register}
               label="Estado"
-              onChange={HandleChange}
               objectValues={statusOptions}
             />
-            {taskError?.status && (
-              <FieldMessageError message={taskError.status} />
+            {errors?.status && (
+              <FieldMessageError message={errors.status.message} />
             )}
           </div>
         </div>
@@ -146,13 +160,12 @@ export default function CreateTask() {
           <div className="col-span-5">
             <Select
               name="category"
-              value={task.category}
+              register={register}
               label="Categoria"
-              onChange={HandleChange}
               objectValues={categoryOptions}
             />
-            {taskError?.category && (
-              <FieldMessageError message={taskError.category} />
+            {errors?.category && (
+              <FieldMessageError message={errors.category.message} />
             )}
           </div>
           <div className="col-span-3 flex items-end">

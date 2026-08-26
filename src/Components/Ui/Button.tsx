@@ -1,18 +1,31 @@
-interface Button {
+interface ButtonProps {
   typeBtn: "button" | "submit";
   labelBtn?: string;
   onClick?: () => void;
-  loading?: boolean
-  loadingText?: string
+  loading?: boolean;
+  loadingText?: string;
+  formId?: string;
 }
 
-export default function Button({ typeBtn, onClick, labelBtn, loading, loadingText }: Button) {
+export default function Button({
+  typeBtn,
+  onClick,
+  labelBtn,
+  loading,
+  loadingText,
+  formId,
+}: ButtonProps) {
   return (
     <div>
       <button
-        className={loading ? "border-none bg-zinc-500 rounded-xl text-white px-4 py-2  " : "border-none bg-zinc-800 rounded-xl text-white px-4 py-2  cursor-pointer hover:bg-zinc-600"}
+        className={
+          loading
+            ? "border-none bg-zinc-500 rounded-xl text-white px-4 py-2  "
+            : "border-none bg-zinc-800 rounded-xl text-white px-4 py-2  cursor-pointer hover:bg-zinc-600"
+        }
         onClick={typeBtn === "button" && !loading ? onClick : undefined}
         type={typeBtn}
+        form={formId}
         disabled={loading}
       >
         {loading ? loadingText : labelBtn}

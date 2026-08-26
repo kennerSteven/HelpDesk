@@ -5,5 +5,5 @@ export interface LoginTypes {
 export interface CreateUserTypes {
   name: string;
   password: string;
-  role?: any;
+  role: any;
 }

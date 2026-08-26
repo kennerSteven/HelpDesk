@@ -2,46 +2,39 @@ import Button from "../../../../Components/Ui/Button";
 import FieldMessageError from "../../../../Components/Ui/FieldMessage";
 import Input from "../../../../Components/Ui/Input";
 import TextArea from "../../../../Components/Ui/TextArea";
-import useForm from "../../../../Shared/Hooks/useForm";
-import useErrors from "../../../../Shared/Hooks/useErrors";
+import { CategorySchema } from "../../../../Schemas/Category.schema";
 import {
   GetStorageItem,
   SetStorageItem,
 } from "../../../../Utils/Storage.utils";
 import { useState } from "react";
-import { ValidateFields } from "../../../../Utils/FieldValidate";
+import { useZodForm } from "../../../../Hooks/useZodForm";
+
+interface CategoryTypes {
+  nameCategory: string;
+  descriptionCategory?: string;
+}
 
 export default function CreateCategory() {
-  const {
-    values: category,
-    HandleChange,
-    setValues,
-  } = useForm({
-    nameCategory: "",
-    descriptionCategory: "",
-  });
-  const [error, setError] = useState("");
-
-  const [categoriesList, setCategoriesList] = useState<any[]>(() =>
+  const [categoriesList, setCategoriesList] = useState<CategoryTypes[]>(() =>
     GetStorageItem("category", []),
   );
 
-  function HandleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!category.nameCategory.trim()) {
-      return setError("Por favor complete los campos");
-    }
-    setError("")
+  const { useAppForm } = useZodForm();
+  const { register, errors, handleSubmit } = useAppForm({
+    schema: CategorySchema,
+  });
 
+  function HandleSubmit(Data: CategoryTypes) {
     const categoryData = GetStorageItem("category", []);
-    setCategoriesList(categoryData);
-    categoryData.push(category);
-    SetStorageItem("category", categoryData);
-    setValues({
-      nameCategory: "",
-      descriptionCategory: "",
-    });
-    
+    const normalizedData: CategoryTypes = {
+      nameCategory: Data.nameCategory.trim(),
+      descriptionCategory: Data.descriptionCategory?.trim() ?? "",
+    };
+
+    const nextCategories = [...categoryData, normalizedData];
+    SetStorageItem("category", nextCategories);
+    setCategoriesList(nextCategories);
   }
 
   return (
@@ -50,7 +43,7 @@ export default function CreateCategory() {
         {categoriesList.map((i, k) => (
           <div
             className="flex  p-4 gap-5  bg-zinc-100 border-l-4 border-l-zinc-800 rounded-xl shadow-md shadow-zinc-200 "
-            key={k}
+            key={`${i.nameCategory}-${k}`}
           >
             <div>
               <strong>Nombre</strong>
@@ -66,29 +59,29 @@ export default function CreateCategory() {
         ))}
       </div>
       <form
-        onSubmit={HandleSubmit}
+        onSubmit={handleSubmit(HandleSubmit)}
         className="px-4 py-8  rounded-xl shadow-md shadow-zinc-200"
       >
         <div className="my-5">
           <Input
             name="nameCategory"
-            value={category.nameCategory}
-            onChange={HandleChange}
+            register={register}
             label="Nombre de la categoria"
             showLabel={true}
             placeholder="Nombre de la categoria"
           />
         </div>
-
+        {errors.nameCategory && (
+          <FieldMessageError message={errors.nameCategory.message} />
+        )}
         <TextArea
           name="descriptionCategory"
-          value={category.descriptionCategory}
-          onChange={HandleChange}
+          register={register}
           label="Descripcion de la categoria (Opcional)"
           showLabel={true}
           placeholder="Descripcion de la categoria"
         />
-        {error && <FieldMessageError message={error} />}
+     
         <div className="flex justify-end mt-5">
           <Button typeBtn="submit" labelBtn="Crear categoria" />
         </div>
