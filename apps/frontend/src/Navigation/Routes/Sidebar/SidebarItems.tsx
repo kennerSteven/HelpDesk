@@ -10,22 +10,24 @@ export default function SidebarItem({ item }: SidebarItemProps) {
     <li>
       <NavLink
         to={item.to}
-        end={item.to === "/"}
-        aria-label={item.label}
+        end={item.exact ?? item.to === "/"}
         className={({ isActive }) =>
-          [
-            "group relative flex justify-center rounded-lg px-2 py-1.5 transition-all duration-200",
+          `group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-150 ${
             isActive
-              ? "bg-black text-white shadow-sm"
-              : "text-black hover:bg-zinc-100 hover:text-black",
-          ].join(" ")
+              ? "bg-slate-900 text-white shadow-xs"
+              : "text-slate-600 hover:bg-slate-100/90 hover:text-slate-900"
+          }`
         }
       >
-        {item.icon}
-
-        <span className="invisible absolute start-full top-1/2 ms-4 -translate-y-1/2 rounded bg-gray-900 px-2 py-1.5 text-xs font-medium text-white group-hover:visible">
-          {item.label}
+        <span className="shrink-0 transition-transform duration-150 group-hover:scale-105">
+          {item.icon}
         </span>
+        <span className="truncate">{item.label}</span>
+        {item.badge && (
+          <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 group-hover:bg-slate-200">
+            {item.badge}
+          </span>
+        )}
       </NavLink>
     </li>
   );

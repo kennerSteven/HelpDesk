@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { CreateTaskController } from "../Controllers/CreateTask.controller";
+import {
+  CreateTaskController,
+  GetAllTasks,
+} from "../Controllers/Task.controller";
 import Validate from "../Middleware/Validate.middleware";
 import { CreateTaskSchema } from "@repo/schemas";
 
 const route = Router();
 
-route.post("/", Validate(CreateTaskSchema), CreateTaskController);
-
+route.post("/createTask", Validate(CreateTaskSchema), CreateTaskController);
+route.get("/getTasks", GetAllTasks);
 export default route;

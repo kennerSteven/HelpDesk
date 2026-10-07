@@ -1,5 +1,6 @@
 export interface TaskType {
   id: string;
+  _id?: string;
   name: string;
   description?: string;
   dateInit: string;

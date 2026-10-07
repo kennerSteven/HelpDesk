@@ -6,7 +6,7 @@ import CreateNewUser from "../../Features/Login/Components/CreateNewUser";
 import Task from "../../Features/Task/Components/Task/Task";
 
 import DashboardLayout from "../../Layouts/DashboardLayout";
-import Pepe from "../../Components/Pepe";
+import CalendarPage from "../../Features/Calendar/CalendarPage";
 
 export default function App() {
   return (
@@ -16,8 +16,6 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/createNewUser" element={<CreateNewUser />} />
           <Route element={<DashboardLayout />}>
-            
-
             <Route
               path="/"
               element={
@@ -26,12 +24,35 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
             <Route
-              path="/pepe"
+              path="/tasks"
               element={
                 <ProtectedRoute>
-                  <Pepe />
+                  <Task />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Task />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/Calendar"
+              element={
+                <ProtectedRoute>
+                  <CalendarPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <CalendarPage />
                 </ProtectedRoute>
               }
             />

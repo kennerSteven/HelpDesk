@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "@fullcalendar/react": "^6.1.21",
+    "@fullcalendar/timegrid": "^6.1.21",
     "@hookform/resolvers": "^5.9.1",
     "@repo/schemas": "*",
     "@tailwindcss/vite": "^4.3.3",
@@ -20,6 +24,7 @@
     "react-router": "^8.3.0",
     "react-router-dom": "^7.18.2",
     "tailwindcss": "^4.3.3",
+    "temporal-polyfill": "^1.0.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

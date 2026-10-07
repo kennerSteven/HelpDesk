@@ -1,39 +1,101 @@
+import { type TextareaHTMLAttributes } from "react";
 
-interface TextAreaProps {
+export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   name: string;
-
-  register: any;
+  register?: any;
   type?: string;
   placeholder?: string;
   label?: string;
   showLabel?: boolean;
+  rows?: number;
+  maxLength?: number;
+  showCounter?: boolean;
+  currentLength?: number;
+  badge?: string;
+  helperText?: string;
+  error?: string;
+  required?: boolean;
+  className?: string;
+  textareaClassName?: string;
 }
 
 export default function TextArea({
   name,
   register,
-
   placeholder,
   label,
   showLabel = false,
+  rows = 3,
+  maxLength,
+  showCounter = false,
+  currentLength,
+  badge,
+  helperText,
+  error,
+  required = false,
+  className = "",
+  textareaClassName = "",
+  disabled = false,
+  ...rest
 }: TextAreaProps) {
+  const registeredProps = register ? register(name) : {};
+
   return (
-    <div>
+    <div className={`w-full ${className}`}>
       {showLabel && label && (
-        <label
-          htmlFor={name}
-          className="block mb-2 text-md font-medium text-zinc-700"
-        >
-          {label}
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <label
+              htmlFor={name}
+              className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              {label}
+              {required && <span className="text-rose-500">*</span>}
+            </label>
+            {badge && (
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+                {badge}
+              </span>
+            )}
+          </div>
+
+          {showCounter && maxLength && (
+            <span
+              className={`text-[11px] font-medium ${(currentLength || 0) >= maxLength * 0.9
+                ? "font-bold text-rose-500"
+                : "text-slate-400"
+                }`}
+            >
+              {currentLength || 0} / {maxLength}
+            </span>
+          )}
+        </div>
       )}
-      <textarea
-        id={name}
-        name={name}
-        {...register(name)}
-        placeholder={placeholder}
-        className="border p-2 rounded-xl border-zinc-100 bg-zinc-50 w-full min-h-28 resize-y"
-      />
+
+      <div className="relative">
+        <textarea
+          id={name}
+          name={name}
+          rows={rows}
+          maxLength={maxLength}
+          placeholder={placeholder}
+          disabled={disabled}
+          {...registeredProps}
+          {...rest}
+          className={`w-full min-h-[96px] resize-y rounded-xl border bg-slate-50/70 p-3 text-sm font-medium text-slate-800 placeholder-slate-400 outline-none transition-all duration-150 ${error
+            ? "border-rose-300 bg-rose-50/20 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15"
+            : "border-slate-200 focus:border-indigo-500 focus:bg-white focus:ring-3 focus:ring-indigo-500/15"
+            } ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""
+            } ${textareaClassName}`}
+        />
+      </div>
+
+      {helperText && !error && (
+        <p className="mt-1 text-[11px] text-slate-400">{helperText}</p>
+      )}
+
+      {error && <p className="mt-1 text-xs font-semibold text-rose-600">{error}</p>}
     </div>
   );
 }
+

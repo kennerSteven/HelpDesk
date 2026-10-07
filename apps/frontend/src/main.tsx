@@ -5,12 +5,13 @@ import LoginProvider from "./Features/Login/Context/Login/LoginProvider.tsx";
 import { BrowserRouter } from "react-router-dom";
 import App from "./Navigation/Routes/Routes.tsx";
 
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <BrowserRouter>
-      <LoginProvider>
-        <App />
-      </LoginProvider>
-    </BrowserRouter>
+     <BrowserRouter>
+      <LoginProvider> 
+    <App />
+     </LoginProvider>
+    </BrowserRouter> 
   </StrictMode>,
 );

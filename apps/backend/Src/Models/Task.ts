@@ -11,11 +11,11 @@ const taskSchema = new mongoose.Schema({
     required: false,
   },
   dateInit: {
-    type: Date,
+    type: String,
     required: true,
   },
   dateFinish: {
-    type: Date,
+    type: String,
     required: true,
   },
   priority: {

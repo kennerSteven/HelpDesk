@@ -78,3 +78,52 @@ export function AccountIcon(props: SVGProps<SVGSVGElement>) {
     </BaseIcon>
   );
 }
+
+export function DashboardIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <BaseIcon {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+      />
+    </BaseIcon>
+  );
+}
+
+export function GestorIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <BaseIcon {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+      />
+    </BaseIcon>
+  );
+}
+
+export function CalendarSidebarIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <BaseIcon {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
+    </BaseIcon>
+  );
+}
+
+export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <BaseIcon {...props}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+      />
+    </BaseIcon>
+  );
+}
+

@@ -1,10 +1,10 @@
 import { createElement, type ReactNode } from "react";
 import {
+  DashboardIcon,
+  GestorIcon,
+  CalendarSidebarIcon,
   AccountIcon,
-  BillingIcon,
   GeneralIcon,
-  InvoicesIcon,
-  TeamsIcon,
 } from "../../../Components/Icons/SidebarIcons";
 
 export type SidebarItemConfig = {
@@ -12,12 +12,58 @@ export type SidebarItemConfig = {
   label: string;
   to: string;
   icon: ReactNode;
+  badge?: string | number;
+  exact?: boolean;
 };
 
-export const sidebarItems: SidebarItemConfig[] = [
-  { id: "general", label: "General", to: "/", icon: createElement(GeneralIcon) },
-  { id: "teams", label: "Teams", to: "/pepe", icon: createElement(TeamsIcon) },
-  { id: "billing", label: "Billing", to: "/billing", icon: createElement(BillingIcon) },
-  { id: "invoices", label: "Invoices", to: "/invoices", icon: createElement(InvoicesIcon) },
-  { id: "account", label: "Account", to: "/account", icon: createElement(AccountIcon) },
+export type SidebarSectionConfig = {
+  id: string;
+  title: string;
+  items: SidebarItemConfig[];
+};
+
+export const sidebarSections: SidebarSectionConfig[] = [
+  {
+    id: "tasks-section",
+    title: "Tareas",
+    items: [
+      {
+        id: "dashboard",
+        label: "Dashboard",
+        to: "/",
+        exact: true,
+        icon: createElement(DashboardIcon),
+      },
+      {
+        id: "gestor",
+        label: "Gestor",
+        to: "/tasks",
+        icon: createElement(GestorIcon),
+      },
+      {
+        id: "calendar",
+        label: "Calendario",
+        to: "/Calendar",
+        icon: createElement(CalendarSidebarIcon),
+      },
+    ],
+  },
+  {
+    id: "general-section",
+    title: "General",
+    items: [
+      {
+        id: "account",
+        label: "Mi Cuenta",
+        to: "/account",
+        icon: createElement(AccountIcon),
+      },
+      {
+        id: "settings",
+        label: "Ajustes",
+        to: "/settings",
+        icon: createElement(GeneralIcon),
+      },
+    ],
+  },
 ];

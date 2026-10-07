@@ -1,7 +1,5 @@
-import { useMemo, useState } from "react";
-import { GetStorageItem } from "../../../../Utils/Storage.utils";
+import { useEffect, useMemo, useState } from "react";
 import CreateTask from "../CreateTask/CreateTask";
-import type { TaskType } from "../../Types/TaskTypes";
 import ShowTask from "./ShowTask";
 import Empty from "../../../../Components/Common/Empty";
 import FilterTask from "./filterTask";
@@ -12,14 +10,42 @@ import EditTask from "./editTask";
 import useEditTask from "../../Hooks/useEditTask";
 import useModal from "../../../../Hooks/useModal";
 import useShowToast from "../../../../Hooks/useShowToast";
+import { getAllTasks } from "../../Services/task.service";
+
+import PriorityQuickFilter from "./PriorityQuickFilter";
 
 export default function Task() {
   const [search, setSearch] = useState("");
-  const [tasks, setTasks] = useState<TaskType[]>(() =>
-    GetStorageItem("task", []),
-  );
 
-  const [category] = useState<any[]>(() => GetStorageItem("category", []));
+  interface TaskPopulated {
+    _id: string;
+    name: string;
+    description?: string;
+    dateInit: string;
+    dateFinish: string;
+    priority: string;
+    categoryId: {
+      _id: string;
+      nameCategory: string;
+      descriptionCategory?: string;
+    };
+  }
+
+  const [tasks, setTasks] = useState<TaskPopulated[]>([]);
+
+  useEffect(() => {
+    async function GetAllCategories() {
+      try {
+        const get = await getAllTasks();
+        setTasks(get);
+      } catch (error) {
+        console.log("Error al obtener categorias", error);
+      }
+    }
+
+    GetAllCategories();
+  }, []);
+
   const { isOpen, openModal, closeModal } = useModal();
   const {
     isOpen: isEditOpen,
@@ -32,7 +58,7 @@ export default function Task() {
     closeEditToast,
     selectTaskToEdit,
     updateTask,
-  } = useEditTask({ tasks, setTasks, closeModal });
+  } = useEditTask({ tasks: tasks as any, setTasks: setTasks as any, closeModal });
 
   //Llama al hook de eliminar, destructurando las funciones y pasando parametros necesarios, como el objeto de tasks y la funcion setteadora
   const {
@@ -47,7 +73,7 @@ export default function Task() {
     deleteTask,
     closeDeleteModal,
     refreshTasks,
-  } = useTaskActions(tasks, setTasks);
+  } = useTaskActions(tasks as any, setTasks as any);
 
   //llama al hook useShowTask
   const {
@@ -55,12 +81,6 @@ export default function Task() {
     showToast,
     closeToast: closeSuccessToast,
   } = useShowToast();
-
-  const priorityOptions = [
-    { value: "LOW", label: "Baja" },
-    { value: "MEDIUM", label: "Media" },
-    { value: "HIGH", label: "Alta" },
-  ];
 
   //Funcion que se ejecuta al crear una tarea
 
@@ -76,7 +96,7 @@ export default function Task() {
   const filteredTask = useMemo(() => {
     return tasks.filter((task) => {
       const matchesCategory =
-        !categoryFilter || task.category === categoryFilter;
+        !categoryFilter || task.categoryId === categoryFilter;
 
       const matchesPriority =
         !priorityFilter || task.priority === priorityFilter;
@@ -88,73 +108,137 @@ export default function Task() {
   }, [tasks, search, categoryFilter, priorityFilter]);
 
   //Carga las categorias, memorizando las categorias si no hay alguna nueva
+
+  console.log("Tareas cargadas", tasks);
   const categoryParsed = useMemo(() => {
-    return category.map((item) => ({
-      label: item.descriptionCategory,
-      value: item.nameCategory,
+    return tasks.map((item) => ({
+      label: item.categoryId.nameCategory,
+      value: item.categoryId.nameCategory,
     }));
-  }, [category]);
+  }, [tasks]);
 
   return (
-    <div className="flex justify-between">
-      <div className="w-full mx-20">
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Tareas</h1>
+    <div className="w-full max-w-[1600px] mx-auto p-6 md:p-8 lg:p-10 space-y-8">
+      {/* Header */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-slate-900">
+            Tareas
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Gestiona tus tareas creadas en el sistema.
+          </p>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={openModal}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium transition shadow-sm cursor-pointer"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 4.5v15m7.5-7.5h-15"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>Nueva Tarea</span>
+          </button>
+        </div>
+      </header>
 
-            <p className="text-sm text-zinc-500">
-              Gestiona tus tareas creadas en el sistema.
-            </p>
+      {/* 12-Column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Priority Sidebar */}
+        <aside className="lg:col-span-3">
+          <PriorityQuickFilter />
+        </aside>
+
+        {/* Content Area */}
+        <main className="lg:col-span-9 space-y-6">
+          <FilterTask
+            register={register}
+            objectCategory={categoryParsed}
+            search={search}
+            onSearchChange={setSearch}
+            onCreate={openModal}
+          />
+
+          {/* Tasks list */}
+          {tasks.length === 0 ? (
+            <Empty onCreate={openModal} />
+          ) : (
+            <section
+              aria-label="Listado de tareas"
+              className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 sm:p-5 space-y-3.5 shadow-xs"
+            >
+              <div className="flex items-center justify-between px-1 pb-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Listado de Tareas
+                  </h3>
+                  <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-200/80 text-slate-700">
+                    {filteredTask.length}
+                  </span>
+                </div>
+                {filteredTask.length !== tasks.length && (
+                  <span className="text-xs text-slate-400 font-medium">
+                    Filtradas de {tasks.length} totales
+                  </span>
+                )}
+              </div>
+
+              {filteredTask.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {filteredTask.map((task) => (
+                    <ShowTask
+                      key={task._id}
+                      id={task._id}
+                      name={task.name}
+                      description={task.description}
+                      category={task.categoryId?.nameCategory}
+                      dateInit={task.dateInit}
+                      dateFinish={task.dateFinish}
+                      priority={task.priority}
+                      onDelete={() => handleDelete(task._id)}
+                      onEdit={() => {
+                        selectTaskToEdit(task._id);
+                        openEditModal();
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-slate-200 bg-white/60 py-8">
+                  <Empty
+                    title="No se encontraron tareas"
+                    description="Prueba con otro nombre o cambia los filtros."
+                    onCreate={openModal}
+                  />
+                </div>
+              )}
+            </section>
+          )}
+        </main>
+      </div>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="flex max-h-[90vh] w-full max-w-2xl shrink-0 flex-col overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xl">
+            <CreateTask
+              close={closeModal}
+              onSuccess={handleTaskSuccess}
+              showButtons={true}
+            />
           </div>
         </div>
-
-        {/* Filtro por categoría, pasamos los objetos de categoria y prioridads, como tambien el valor de sarch */}
-        <FilterTask
-          register={register}
-          objectCategory={categoryParsed}
-          priority={priorityOptions}
-          search={search}
-          onSearchChange={setSearch}
-          onCreate={openModal}
-        />
-        {/* Analiza, si el objeto el tasks no tiene nada renderiza el componente empty, pero si los calculos de la funcion memo son true
-        itera el resultado de los filtros, sino por defecto itera todas las tareas  */}
-        {tasks.length === 0 ? (
-          <Empty onCreate={openModal} />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {filteredTask.length > 0 ? (
-              filteredTask.map((task) => (
-                <ShowTask
-                  key={task.id}
-                  id={task.id}
-                  name={task.name}
-                  description={task.description}
-                  category={task.category}
-                  status={task.status}
-                  dateInit={task.dateInit}
-                  dateFinish={task.dateFinish}
-                  priority={task.priority}
-                  onDelete={() => handleDelete(task.id)}
-                  onEdit={() => {
-                    selectTaskToEdit(task.id);
-                    openEditModal();
-                  }}
-                />
-              ))
-            ) : (
-              <div className="col-span-full py-8">
-                <Empty
-                  title="No se encontraron tareas"
-                  description="Prueba con otro nombre o cambia los filtros."
-                  onCreate={openModal}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      )}
 
       {isEditOpen && selectedEditTask && (
         <EditTask
@@ -163,12 +247,6 @@ export default function Task() {
           onCancel={closeEditModal}
         />
       )}
-
-      <div className="col-span-3">
-        {isOpen && (
-          <CreateTask close={closeModal} onSuccess={handleTaskSuccess} />
-        )}
-      </div>
 
       {!isOpen && (
         <div className="fixed right-6 top-6 z-50 w-full max-w-sm">
