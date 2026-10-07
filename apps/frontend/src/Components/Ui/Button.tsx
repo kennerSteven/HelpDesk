@@ -22,21 +22,21 @@ export interface ButtonProps {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    "bg-zinc-900 text-white shadow-sm shadow-zinc-900/20 hover:bg-zinc-800 active:bg-zinc-950 border border-transparent",
+    "bg-zinc-900 text-white hover:bg-zinc-800 active:scale-95 active:opacity-80",
   secondary:
-    "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 active:bg-zinc-300 border border-zinc-200/80",
+    "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 active:scale-95 active:opacity-80",
   outline:
-    "bg-white text-zinc-800 hover:bg-zinc-50 active:bg-zinc-100 border border-zinc-300 shadow-xs",
+    "bg-transparent text-zinc-900 border border-zinc-900 hover:bg-zinc-50 active:scale-95 active:opacity-80",
   danger:
-    "bg-rose-50 text-rose-600 hover:bg-rose-100 active:bg-rose-200 border border-rose-200",
+    "bg-rose-500 text-white hover:bg-rose-600 active:scale-95 active:opacity-80",
   ghost:
-    "bg-transparent text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 border border-transparent",
+    "bg-transparent text-zinc-600 hover:bg-zinc-50 active:scale-95 active:opacity-80",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-xs gap-1.5 rounded-lg",
-  md: "h-10 px-4 text-sm gap-2 rounded-xl",
-  lg: "h-12 px-5 text-base gap-2.5 rounded-xl",
+  sm: "min-h-[32px] px-4 text-[13px] gap-1.5 rounded-full",
+  md: "min-h-[44px] px-6 text-[17px] gap-2 rounded-full",
+  lg: "min-h-[50px] px-8 text-[19px] gap-2.5 rounded-full",
 };
 
 export default function Button({
@@ -65,11 +65,11 @@ export default function Button({
         form={formId}
         disabled={isDisabled}
         onClick={typeBtn === "button" && !isDisabled ? onClick : undefined}
-        className={`inline-flex items-center justify-center font-bold tracking-tight select-none transition-all duration-150 active:scale-[0.98] ${
+        className={`inline-flex items-center justify-center font-semibold tracking-tight select-none transition-[opacity,transform,background-color] duration-200 ease-out ${
           fullWidth ? "w-full" : ""
         } ${sizeStyles[size]} ${
           isDisabled
-            ? "bg-zinc-200 text-zinc-400 border-transparent cursor-not-allowed shadow-none"
+            ? "bg-zinc-200 text-zinc-400 cursor-not-allowed"
             : variantStyles[variant]
         } ${className}`}
       >

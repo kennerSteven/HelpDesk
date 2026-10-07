@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import Modal from "../../Components/Modal/Modal";
-import type { SelectTaskProps } from "./Hooks/useSelectTask";
-import CreateTask from "../Task/Components/CreateTask/CreateTask";
+import Modal from "../../../Components/Modal/Modal";
+import type { SelectTaskProps } from "../Hooks/useSelectTask";
+import CreateTask from "../../Task/Components/CreateTask/CreateTask";
 
 import ExistingTaskList from "./ExistingTaskList";
-import useSelectTask from "./Hooks/useSelectTask";
+import useSelectTask from "../Hooks/useSelectTask";
 
 export default function SelectTask({
   onCloseParent,
@@ -179,7 +179,6 @@ export default function SelectTask({
           closeModal={closeCreateTaskModal}
           contentModal={
             <CreateTask
-              close={closeCreateTaskModal}
               showButtons={false}
               onSuccess={() => {
                 closeCreateTaskModal();

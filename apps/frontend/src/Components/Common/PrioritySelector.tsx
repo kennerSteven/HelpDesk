@@ -26,31 +26,31 @@ const variantActiveStyles: Record<
   { card: string; icon: string }
 > = {
   low: {
-    card: "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-xs ring-2 ring-emerald-500/20",
+    card: "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-emerald-600",
   },
   success: {
-    card: "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-xs ring-2 ring-emerald-500/20",
+    card: "border-emerald-300 bg-emerald-50 text-emerald-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-emerald-600",
   },
   medium: {
-    card: "border-amber-300 bg-amber-50 text-amber-800 shadow-xs ring-2 ring-amber-500/20",
+    card: "border-amber-300 bg-amber-50 text-amber-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-amber-600",
   },
   warning: {
-    card: "border-amber-300 bg-amber-50 text-amber-800 shadow-xs ring-2 ring-amber-500/20",
+    card: "border-amber-300 bg-amber-50 text-amber-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-amber-600",
   },
   high: {
-    card: "border-rose-300 bg-rose-50 text-rose-800 shadow-xs ring-2 ring-rose-500/20",
+    card: "border-rose-300 bg-rose-50 text-rose-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-rose-600",
   },
   danger: {
-    card: "border-rose-300 bg-rose-50 text-rose-800 shadow-xs ring-2 ring-rose-500/20",
+    card: "border-rose-300 bg-rose-50 text-rose-800 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-rose-600",
   },
   zinc: {
-    card: "border-zinc-300 bg-zinc-100 text-zinc-900 shadow-xs ring-2 ring-zinc-500/20",
+    card: "border-zinc-300 bg-zinc-100 text-zinc-900 shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
     icon: "text-zinc-800",
   },
 };
@@ -80,19 +80,19 @@ export default function PrioritySelector({
       type="button"
       disabled={disabled}
       onClick={handleClick}
-      className={`flex min-h-[52px] flex-col items-center justify-center rounded-xl border p-2.5 transition-all active:scale-[0.97] ${
+      className={`flex min-h-[52px] flex-col items-center justify-center rounded-[14px] border p-2.5 transition-all active:scale-[0.97] ${
         disabled ? "cursor-not-allowed opacity-60" : ""
       } ${
         isSelected
           ? activeConfig.card
-          : "border-slate-200 bg-slate-50/80 text-slate-600 hover:bg-slate-100"
+          : "border-transparent bg-zinc-50 text-zinc-500 hover:bg-zinc-100/80"
       } ${className}`}
     >
-      <div className="flex items-center gap-1 text-xs font-bold">
+      <div className="flex items-center gap-1.5 text-[13px] font-semibold tracking-tight">
         {icon && (
           <span
             className={`shrink-0 ${
-              isSelected ? activeConfig.icon : "text-slate-400"
+              isSelected ? activeConfig.icon : "text-zinc-400"
             }`}
           >
             {icon}

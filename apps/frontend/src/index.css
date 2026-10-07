@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "cv05", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
 .calendar-grid .fc {
 	--fc-border-color: #e2e8f0;
 	--fc-page-bg-color: #ffffff;

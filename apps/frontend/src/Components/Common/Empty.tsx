@@ -32,8 +32,8 @@ export default function Empty({
           />
         </svg>
 
-        <h2 className="mt-6 text-2xl font-bold text-zinc-900">{title}</h2>
-        <p className="mt-4 text-pretty text-zinc-700">{description}</p>
+        <h2 className="mt-6 text-[22px] font-semibold tracking-tight text-zinc-900">{title}</h2>
+        <p className="mt-3 text-[17px] leading-relaxed text-zinc-500">{description}</p>
 
         {onCreate && (
           <Button

@@ -11,7 +11,7 @@ export interface CategoryTypes {
 
 export interface CreateTaskProps {
   onSuccess?: () => void;
-  close: () => void;
+
   className?: string;
   showButtons?: boolean;
 }

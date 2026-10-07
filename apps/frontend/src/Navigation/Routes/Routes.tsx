@@ -3,10 +3,13 @@ import Login from "../../Features/Login/Components/Login";
 import ProtectedRoute from "./ProtectedRoute";
 
 import CreateNewUser from "../../Features/Login/Components/CreateNewUser";
-import Task from "../../Features/Task/Components/Task/Task";
+import Task from "../../Features/Task/Components/Task";
 
 import DashboardLayout from "../../Layouts/DashboardLayout";
-import CalendarPage from "../../Features/Calendar/CalendarPage";
+import CalendarPage from "../../Features/Calendar/Page/CalendarPage";
+
+import TaskTopbar from "../../Features/Task/Components/TaskTopbar";
+import CalendarTopbar from "../../Features/Calendar/Components/CalendarTopbar";
 
 export default function App() {
   return (
@@ -15,48 +18,56 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/createNewUser" element={<CreateNewUser />} />
-          <Route element={<DashboardLayout />}>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<TaskTopbar />}>
                   <Task />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/tasks"
-              element={
-                <ProtectedRoute>
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<TaskTopbar />}>
                   <Task />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<TaskTopbar />}>
                   <Task />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/Calendar"
-              element={
-                <ProtectedRoute>
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Calendar"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<CalendarTopbar />}>
                   <CalendarPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/calendar"
-              element={
-                <ProtectedRoute>
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calendar"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<CalendarTopbar />}>
                   <CalendarPage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
     </div>

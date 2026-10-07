@@ -1,6 +1,6 @@
 /**
  * CalendarKpiSidebar.tsx
- * 
+ *
  * Barra lateral de métricas y agenda diaria que replica fielmente el diseño de Google Stitch:
  * - Tarjeta 1: Métricas de rendimiento y balance mensual (Total Planificado, Pendientes Próximos, Tasa de Cumplimiento con barra de progreso).
  * - Tarjeta 2: Agenda dinámica del día seleccionado con lista de eventos, indicador de color lateral y botón para planificar en dicha fecha.
@@ -11,7 +11,7 @@ import {
   ClockIcon,
   CheckIcon,
   DotsVerticalIcon,
-} from "../../Components/Icons";
+} from "../../../../Components/Icons";
 
 interface CalendarKpiSidebarProps {
   totalEvents?: number;
@@ -27,14 +27,10 @@ export default function CalendarKpiSidebar({
   completedTasks = 0,
   pendingTasks = 0,
 
-
   className = "",
 }: CalendarKpiSidebarProps) {
-
   const completionRate =
     totalEvents > 0 ? Math.round((completedTasks / totalEvents) * 100) : 78;
-
-
 
   return (
     <aside
@@ -131,12 +127,11 @@ export default function CalendarKpiSidebar({
             />
           </div>
           <p className="text-xs text-slate-400 mt-2">
-            {completedTasks} de {totalEvents || 1} tareas completadas dentro de la fecha límite programada.
+            {completedTasks} de {totalEvents || 1} tareas completadas dentro de
+            la fecha límite programada.
           </p>
         </div>
       </div>
-
-
     </aside>
   );
 }

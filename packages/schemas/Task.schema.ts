@@ -11,6 +11,10 @@ export const CreateTaskSchema = z.object({
 
 export const TaskResponseSchema = CreateTaskSchema.extend({
   _id: z.string(),
+  categoryId: z.object({
+    _id: z.string(),
+    nameCategory: z.string(),
+  }),
 });
 
 export type TaskResponseType = z.infer<typeof TaskResponseSchema>;

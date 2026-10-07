@@ -5,7 +5,7 @@ import { ref } from "node:process";
 const CalendarEvent = new mongoose.Schema({
     taskId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Tasks",
+        ref: "Task",
         required: true,
     },
     date: {

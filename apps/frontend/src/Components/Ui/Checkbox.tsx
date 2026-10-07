@@ -37,15 +37,15 @@ export default function Checkbox({
           onClick={onChange}
           {...registeredProps}
           {...rest}
-          className="size-4.5 rounded-md border-zinc-300 text-zinc-900 accent-zinc-900 transition-colors focus:ring-2 focus:ring-zinc-900/20 focus:ring-offset-0"
+          className="size-5 rounded-md border-zinc-300 text-zinc-900 accent-zinc-900 transition-colors focus:ring-4 focus:ring-zinc-900/20 focus:ring-offset-0"
         />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm font-semibold text-zinc-800 leading-tight">
+        <span className="text-[15px] font-medium text-zinc-800 leading-tight">
           {label}
         </span>
         {description && (
-          <span className="text-xs text-zinc-500 mt-0.5">{description}</span>
+          <span className="text-[13px] text-zinc-500 mt-0.5">{description}</span>
         )}
       </div>
     </label>

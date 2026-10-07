@@ -1,39 +1,24 @@
-/**
- * Calendar.tsx
- * 
- * Componente principal de Calendario rediseñado según la especificación de Google Stitch:
- * - TopBar con badge de estado "En ritmo", barra de búsqueda de tareas en tiempo real, botón de filtrado y CTA "Nueva tarea".
- * - Subcabecera interactiva con controles de navegación (Anterior, Hoy, Siguiente), título dinámico de período y conmutador de vistas (Mes, Semana, Día).
- * - Grilla FullCalendar con celdas minimalistas y renderizado de eventos con badges clasificados por color según su categoría.
- * - Soporte completo para vista Día y Semana con navegación a la fecha activa y ranura de día completo.
- * - Panel lateral de métricas KPI (CalendarKpiSidebar).
- */
-
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { useEffect, useState } from "react";
-
 import { EventCustomContent } from "./EventCustomContent";
 import SelectTask from "./SelectTask";
-import CalendarKpiSidebar from "./CalendarKpiSidebar";
-import Modal from "../../Components/Modal/Modal";
-import Toast from "../../Components/Toast/Toast";
-import CreateTask from "../Task/Components/CreateTask/CreateTask";
+import Modal from "../../../Components/Modal/Modal";
+import Toast from "../../../Components/Toast/Toast";
+import CreateTask from "../../Task/Components/CreateTask/CreateTask";
 import {
   PlusIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "../../Components/Icons";
-
-import useCalendar, { type CalendarEvent } from "./Hooks/useCalendar";
-import { getCalendar } from "./Services/calendar.service";
-import { getAllTasks } from "../Task/Services/task.service";
-import type { TaskType } from "../Task/Types/TaskTypes";
-import Button from "../../Components/Ui/Button";
-
-export type { CalendarEvent } from "./Hooks/useCalendar";
+} from "../../../Components/Icons";
+import useCalendar, { type CalendarEvent } from "../Hooks/useCalendar";
+import { getCalendar } from "../Services/calendar.service";
+import { getAllTasks } from "../../Task/Services/task.service";
+import type { TaskResponseType } from "@repo/schemas";
+import Button from "../../../Components/Ui/Button";
+export type { CalendarEvent } from "../Hooks/useCalendar";
 
 interface CalendarProps {
   initialEvents?: CalendarEvent[];
@@ -68,7 +53,7 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
   } = useCalendar(initialEvents);
 
   // Estados para métricas reales calculadas desde tareas
-  const [allTasksList, setAllTasksList] = useState<TaskType[]>([]);
+  const [allTasksList, setAllTasksList] = useState<TaskResponseType[]>([]);
 
   // Carga inicial y sincronización de tareas de la API
   useEffect(() => {
@@ -84,7 +69,7 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
 
         // Mapa de tareas por ID (el backend ya trae categoryId poblado con { _id, nameCategory })
         const tasksMap = new Map<string, any>(
-          tasks.map((task: any) => [task._id, task])
+          tasks.map((task: any) => [task._id, task]),
         );
 
         if (Array.isArray(calendarData)) {
@@ -114,54 +99,20 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
     void fetchCalendarAndTasks();
   }, [setEvents]);
 
-  // Métricas calculadas para la barra lateral
-  const totalEventsCount = events.length;
-  const completedTasksCount = allTasksList.filter(
-    (t) => t.status === "Completado" || t.status === "Finalizada"
-  ).length;
-  const pendingTasksCount =
-    allTasksList.filter(
-      (t) => t.status !== "Completado" && t.status !== "Finalizada"
-    ).length || Math.max(0, totalEventsCount - completedTasksCount);
+  // const totalEventsCount = events.length;
+  // const completedTasksCount = allTasksList.filter(
+  //   (t) => t.status === "Completado" || t.status === "Finalizada",
+  // ).length;
+  // const pendingTasksCount =
+  //   allTasksList.filter(
+  //     (t) => t.status !== "Completado" && t.status !== "Finalizada",
+  //   ).length || Math.max(0, totalEventsCount - completedTasksCount);
 
   return (
-    <div className="max-w-[1600px] w-full mx-auto flex flex-col gap-6" data-purpose="application-root">
-      {/* ========================================================================= */}
-      {/* BEGIN: TopBar (Header de Google Stitch con estado, buscador y acciones) */}
-      {/* ========================================================================= */}
-      <header
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-200/70"
-        data-purpose="header-section"
-      >
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-              Mi calendario
-            </h1>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800 border border-slate-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-900 mr-1.5 animate-pulse" />
-              En ritmo
-            </span>
-          </div>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Gestiona tus proyectos, hitos clave y revisa la cadencia de tu equipo.
-          </p>
-        </div>
-
-        {/* Acciones y controles rápidos */}
-        <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
-          {/* CTA: Botón Nueva Tarea */}
-          <Button
-            typeBtn="button"
-            icon={<PlusIcon className="size-3.5" />}
-            labelBtn="Crear nueva tarea"
-            onClick={openCreateTaskModal}
-            className="px-3.5 py-1.5 text-xs font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-800 shadow-xs transition-colors flex items-center gap-1.5 ml-1 cursor-pointer"
-          />
-        </div>
-      </header>
-      {/* END: TopBar */}
-
+    <div
+      className="max-w-[1600px] w-full mx-auto flex flex-col gap-6"
+      data-purpose="application-root"
+    >
       {/* ========================================================================= */}
       {/* BEGIN: MainContentGrid (Grilla con Calendario + Sidebar de Métricas)     */}
       {/* ========================================================================= */}
@@ -217,30 +168,33 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
               <button
                 type="button"
                 onClick={() => handleChangeView("dayGridMonth")}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${currentView === "dayGridMonth"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-500 hover:text-slate-900"
-                  }`}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                  currentView === "dayGridMonth"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
               >
                 Mes
               </button>
               <button
                 type="button"
                 onClick={() => handleChangeView("timeGridWeek")}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${currentView === "timeGridWeek"
-                  ? "bg-white text-slate-900 font-semibold shadow-xs"
-                  : "text-slate-500 hover:text-slate-900"
-                  }`}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
+                  currentView === "timeGridWeek"
+                    ? "bg-white text-slate-900 font-semibold shadow-xs"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
               >
                 Semana
               </button>
               <button
                 type="button"
                 onClick={() => handleChangeView("timeGridDay")}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${currentView === "timeGridDay"
-                  ? "bg-white text-slate-900 font-semibold shadow-xs"
-                  : "text-slate-500 hover:text-slate-900"
-                  }`}
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
+                  currentView === "timeGridDay"
+                    ? "bg-white text-slate-900 font-semibold shadow-xs"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
               >
                 Día
               </button>
@@ -255,7 +209,9 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
               initialView="dayGridMonth"
               locale="es"
               events={events}
-              eventContent={(eventInfo) => <EventCustomContent {...eventInfo} />}
+              eventContent={(eventInfo) => (
+                <EventCustomContent {...eventInfo} />
+              )}
               datesSet={handleDatesSet}
               dateClick={handleDateClick}
               eventClick={handleEventClick}
@@ -277,13 +233,13 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
         {/* ======================================================================= */}
         {/* Columna Derecha: Sidebar de Métricas (4 Columnas en XL)                 */}
         {/* ======================================================================= */}
-        <CalendarKpiSidebar
+        {/* <CalendarKpiSidebar
           className="xl:col-span-4"
           totalEvents={totalEventsCount}
           completedTasks={completedTasksCount}
           pendingTasks={pendingTasksCount}
           onPlanForDate={openModal}
-        />
+        /> */}
       </main>
       {/* END: MainContentGrid */}
 
@@ -344,12 +300,11 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
           labelConfirm="Crear tarea"
           labelCancel="Cancelar"
           formId="CreateTask"
-          Confirm={() => { }}
+          Confirm={() => {}}
           Cancel={closeCreateTaskModal}
           closeModal={closeCreateTaskModal}
           contentModal={
             <CreateTask
-              close={closeCreateTaskModal}
               showButtons={false}
               onSuccess={() => {
                 closeCreateTaskModal();

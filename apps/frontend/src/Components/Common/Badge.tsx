@@ -23,9 +23,9 @@ export interface BadgeProps {
 }
 
 const sizeStyles: Record<BadgeSize, string> = {
-  sm: "px-2.5 py-1 text-[11px] gap-1.5",
-  md: "px-3.5 py-2 text-xs gap-2 font-bold tracking-wide",
-  lg: "px-4.5 py-2.5 text-sm gap-2.5 font-bold tracking-wide",
+  sm: "px-3 py-1 text-[11px] gap-1.5",
+  md: "px-4 py-1.5 text-[13px] gap-2 font-medium tracking-tight",
+  lg: "px-5 py-2 text-[15px] gap-2.5 font-medium tracking-tight",
 };
 
 const variantStyles: Record<BadgeVariant, string> = {
@@ -39,13 +39,13 @@ const variantStyles: Record<BadgeVariant, string> = {
 };
 
 const activeVariantStyles: Record<BadgeVariant, string> = {
-  black: "border-zinc-900 bg-zinc-900 text-white shadow-xs ring-2 ring-zinc-900/20",
-  success: "border-emerald-600 bg-emerald-600 text-white shadow-xs ring-2 ring-emerald-500/20",
+  black: "border-zinc-800 bg-zinc-800 text-white shadow-xs ring-2 ring-zinc-800/20",
+  success: "border-emerald-500 bg-emerald-500 text-white shadow-xs ring-2 ring-emerald-500/20",
   warning: "border-amber-500 bg-amber-500 text-white shadow-xs ring-2 ring-amber-500/20",
-  danger: "border-rose-600 bg-rose-600 text-white shadow-xs ring-2 ring-rose-500/20",
-  blue: "border-blue-600 bg-blue-600 text-white shadow-xs ring-2 ring-blue-500/20",
-  indigo: "border-indigo-600 bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-500/20",
-  neutral: "border-slate-800 bg-slate-800 text-white shadow-xs ring-2 ring-slate-800/20",
+  danger: "border-rose-500 bg-rose-500 text-white shadow-xs ring-2 ring-rose-500/20",
+  blue: "border-blue-500 bg-blue-500 text-white shadow-xs ring-2 ring-blue-500/20",
+  indigo: "border-indigo-500 bg-indigo-500 text-white shadow-xs ring-2 ring-indigo-500/20",
+  neutral: "border-zinc-600 bg-zinc-600 text-white shadow-xs ring-2 ring-zinc-600/20",
 };
 
 export default function Badge({

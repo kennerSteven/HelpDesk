@@ -20,7 +20,7 @@ export default function useHandleDate({
 }: UseHandleDateProps) {
   const [datePreset, setDatePreset] = useState<DatePreset>("today");
 
-  // Inicializar con la fecha de hoy por defecto al cargar si los campos están vacíos
+
   useEffect(() => {
     const today = getTodayString();
     if (!dateInitValue) {

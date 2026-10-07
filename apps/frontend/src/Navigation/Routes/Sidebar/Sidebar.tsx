@@ -11,7 +11,7 @@ export default function Sidebar() {
   return (
     <aside className="sticky top-0 flex h-screen w-64 min-w-64 flex-col justify-between border-r border-slate-200/90 bg-white shadow-xs z-30 select-none">
       {/* Brand Header */}
-      <div className="flex flex-col border-b border-slate-100">
+      <div className="flex  border-b border-slate-100">
         <div className="flex items-center gap-3 px-5 py-5">
           <div className="flex size-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs font-bold text-base tracking-wider">
             T
@@ -25,6 +25,10 @@ export default function Sidebar() {
             </span>
           </div>
         </div>
+
+
+       
+
       </div>
 
       {/* Navigation Sections */}

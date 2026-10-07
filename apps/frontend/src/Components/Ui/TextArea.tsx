@@ -47,13 +47,13 @@ export default function TextArea({
           <div className="flex items-center gap-2">
             <label
               htmlFor={name}
-              className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-700"
+              className="flex items-center gap-1 text-[13px] font-semibold tracking-tight text-zinc-600"
             >
               {label}
               {required && <span className="text-rose-500">*</span>}
             </label>
             {badge && (
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-semibold text-zinc-500">
                 {badge}
               </span>
             )}
@@ -63,7 +63,7 @@ export default function TextArea({
             <span
               className={`text-[11px] font-medium ${(currentLength || 0) >= maxLength * 0.9
                 ? "font-bold text-rose-500"
-                : "text-slate-400"
+                : "text-zinc-400"
                 }`}
             >
               {currentLength || 0} / {maxLength}
@@ -82,16 +82,16 @@ export default function TextArea({
           disabled={disabled}
           {...registeredProps}
           {...rest}
-          className={`w-full min-h-[96px] resize-y rounded-xl border bg-slate-50/70 p-3 text-sm font-medium text-slate-800 placeholder-slate-400 outline-none transition-all duration-150 ${error
+          className={`w-full min-h-[96px] resize-y rounded-xl border bg-zinc-50/70 p-3 text-base font-medium text-zinc-800 placeholder-zinc-400 outline-none transition-all duration-150 ${error
             ? "border-rose-300 bg-rose-50/20 focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15"
-            : "border-slate-200 focus:border-indigo-500 focus:bg-white focus:ring-3 focus:ring-indigo-500/15"
-            } ${disabled ? "cursor-not-allowed bg-slate-100 text-slate-400" : ""
+            : "border-zinc-200 focus:border-zinc-900 focus:bg-white focus:ring-4 focus:ring-zinc-900/15"
+            } ${disabled ? "cursor-not-allowed bg-zinc-100 text-zinc-400" : ""
             } ${textareaClassName}`}
         />
       </div>
 
       {helperText && !error && (
-        <p className="mt-1 text-[11px] text-slate-400">{helperText}</p>
+        <p className="mt-1 text-[11px] text-zinc-400">{helperText}</p>
       )}
 
       {error && <p className="mt-1 text-xs font-semibold text-rose-600">{error}</p>}

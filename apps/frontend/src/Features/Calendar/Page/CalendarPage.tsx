@@ -1,13 +1,13 @@
 /**
  * CalendarPage.tsx
- * 
+ *
  * Página contenedora del Calendario con gestión de carga, estados de error
  * y estructura de contenedor responsiva.
  */
 
 import { useEffect, useState } from "react";
-import { Calendar, type CalendarEvent } from "./Calendar";
-import { getCalendar } from "./Services/calendar.service";
+import { Calendar, type CalendarEvent } from "../Components/Calendar";
+import { getCalendar } from "../Services/calendar.service";
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -18,17 +18,7 @@ export default function CalendarPage() {
     async function loadCalendarTasks() {
       try {
         const tasks = await getCalendar();
-        const calendarEvents = (tasks || []).map((task: any) => ({
-          id: task._id || task.id,
-          title: task.title,
-          date: task.date,
-          start: task.date || task.start,
-          allDay: true,
-          category: task.category,
-          priority: task.priority,
-          description: task.description,
-        }));
-        setEvents(calendarEvents);
+        setEvents(tasks);
       } catch (error) {
         console.error("Error al cargar las tareas del calendario:", error);
         setErrorMessage("No se pudieron cargar las tareas del calendario.");

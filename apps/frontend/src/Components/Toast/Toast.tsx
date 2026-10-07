@@ -3,27 +3,27 @@ import { useEffect, useState } from "react";
 
 const toastStyles = {
   success: {
-    container: "bg-emerald-700",
-    iconContainer: "bg-emerald-600 text-emerald-100",
-    icon: "text-emerald-100",
+    container: "bg-emerald-600/95 backdrop-blur-2xl border border-emerald-500/40 shadow-[0_12px_40px_-12px_rgba(5,150,105,0.6)]",
+    iconContainer: "bg-white/25 text-white shadow-inner",
+    icon: "text-white",
     title: "text-white",
-    message: "text-emerald-100",
-    messageText: "Tu tarea se creó correctamente.",
+    message: "text-emerald-50",
+    messageText: "Acción completada con éxito.",
   },
   warning: {
-    container: "bg-amber-600",
-    iconContainer: "bg-amber-500 text-amber-100",
-    icon: "text-amber-100",
+    container: "bg-amber-500/95 backdrop-blur-2xl border border-amber-400/40 shadow-[0_12px_40px_-12px_rgba(245,158,11,0.6)]",
+    iconContainer: "bg-white/25 text-white shadow-inner",
+    icon: "text-white",
     title: "text-white",
-    message: "text-amber-100",
+    message: "text-amber-50",
     messageText: "Revisa la información antes de continuar.",
   },
   error: {
-    container: "bg-red-700",
-    iconContainer: "bg-red-600 text-red-100",
-    icon: "text-red-100",
+    container: "bg-rose-600/95 backdrop-blur-2xl border border-rose-500/40 shadow-[0_12px_40px_-12px_rgba(225,29,72,0.6)]",
+    iconContainer: "bg-white/25 text-white shadow-inner",
+    icon: "text-white",
     title: "text-white",
-    message: "text-red-100",
+    message: "text-rose-50",
     messageText: "Ocurrió un error. Inténtalo nuevamente.",
   },
 };
@@ -70,27 +70,40 @@ export default function Toast({
   onClose,
 }: ToastProps) {
   const styles = toastStyles[typeToast];
-  const [isVisible, setIsVisible] = useState(isOpen);
+  const [isRendered, setIsRendered] = useState(isOpen);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (isOpen) {
+      setIsRendered(true);
+      // Pequeño retraso para permitir que el DOM se actualice antes de animar la entrada
+      setTimeout(() => setIsVisible(true), 10);
+      
+      const timeoutId = setTimeout(() => {
+        setIsVisible(false);
+        setTimeout(onClose, 400); // Esperar a que termine la animación de salida
+      }, 3000);
 
-    const timeoutId = setTimeout(() => {
+      return () => clearTimeout(timeoutId);
+    } else {
       setIsVisible(false);
-      onClose();
-    }, 2000);
+      const timeoutId = setTimeout(() => setIsRendered(false), 400);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen, onClose]);
 
-    return () => clearTimeout(timeoutId);
-  }, [isOpen]);
-
-  if (!isOpen || !isVisible) return null;
+  if (!isRendered) return null;
 
   return (
     <div
-      className={`flex w-full items-center gap-3 rounded-full p-3 shadow-lg ${styles.container}`}
+      className={`flex w-full items-center gap-3.5 rounded-[999px] py-3 px-3.5 transition-all duration-500 ease-[cubic-bezier(0.2,1,0.2,1)] transform ${
+        isVisible ? "translate-y-0 opacity-100 scale-100" : "-translate-y-4 opacity-0 scale-95"
+      } ${styles.container}`}
     >
       <div
-        className={`flex size-10 shrink-0 items-center justify-center rounded-full ${styles.iconContainer}`}
+        className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-transform duration-500 delay-100 ${
+          isVisible ? "scale-100" : "scale-50"
+        } ${styles.iconContainer}`}
       >
         <svg
           className={`size-5 ${styles.icon}`}
@@ -103,9 +116,9 @@ export default function Toast({
         </svg>
       </div>
 
-      <div className="min-w-0 flex-1">
-        <p className={`text-sm font-bold ${styles.title}`}>{titleToast}</p>
-        <p className={`text-xs ${styles.message}`}>{styles.messageText}</p>
+      <div className="min-w-0 flex-1 pr-2">
+        <p className={`text-[15px] font-semibold tracking-tight leading-snug ${styles.title}`}>{titleToast}</p>
+        <p className={`text-[14px] leading-snug mt-0.5 opacity-90 ${styles.message}`}>{styles.messageText}</p>
       </div>
     </div>
   );

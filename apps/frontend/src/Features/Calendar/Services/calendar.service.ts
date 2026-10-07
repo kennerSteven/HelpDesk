@@ -1,18 +1,12 @@
-import axios from "axios";
+import { apiClient } from "../../../Config/axios";
 import type { CalendarEvent } from "@repo/schemas";
 
-const API_URL = "http://localhost:3000/api/calendar/createCalendar";
-
 export async function createCalendar(data: CalendarEvent) {
-  const response = await axios.post(API_URL, data);
-
+  const response = await apiClient.post("/calendar/createCalendar", data);
   return response.data;
 }
 
-const API_URL_GET = "http://localhost:3000/api/calendar/getCalendar";
-
 export async function getCalendar() {
-  const response = await axios.get(API_URL_GET);
-
+  const response = await apiClient.get("/calendar/getCalendar");
   return response.data;
 }

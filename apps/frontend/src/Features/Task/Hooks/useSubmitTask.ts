@@ -1,10 +1,8 @@
 import { createTask } from "../Services/task.service";
-import type { TaskType } from "../Types/TaskTypes";
+import type { TaskResponseType } from "@repo/schemas";
 
-export default function useCreateTask() {
-  async function HandleSubmit(data: TaskType) {
-    console.log("Data de crear tarea", data);
-
+export default function useSubmitTask() {
+  async function HandleSubmit(data: TaskResponseType) {
     try {
       const newTask = await createTask(data);
 
@@ -17,10 +15,7 @@ export default function useCreateTask() {
       console.log("Error al intentar tarea", error);
     }
   }
-
-
   return {
     HandleSubmit,
-  
   };
 }
