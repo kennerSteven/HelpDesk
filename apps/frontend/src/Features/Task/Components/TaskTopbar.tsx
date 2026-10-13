@@ -1,8 +1,37 @@
-import React from "react";
+
 import Button from "../../../Components/Ui/Button";
 import { PlusIcon } from "../../../Components/Icons";
+import useModal from "../../../Hooks/useModal";
+import Modal from "../../../Components/Modal/Modal";
+import CreateTask from "./CreateTask/CreateTask";
+import Category from "../../Category/Components/Category";
+import useShowToast from "../../../Hooks/useShowToast";
+import Toast from "../../../Components/Toast/Toast";
 
 export default function TaskTopbar() {
+  const {
+    isOpen: isTaskModalOpen,
+    openModal: openTaskModal,
+    closeModal: closeTaskModal,
+  } = useModal();
+
+  const {
+    isOpen: isCategoryModalOpen,
+    openModal: openCategoryModal,
+    closeModal: closeCategoryModal,
+  } = useModal();
+
+  const {
+    isOpen: showSuccessToast,
+    showToast: openSuccessToast,
+    closeToast: closeSuccessToast,
+  } = useShowToast();
+
+  const handleTaskSuccess = () => {
+    closeTaskModal();
+    openSuccessToast();
+  };
+
   return (
     <div className="flex w-full items-center justify-between">
       {/* Lado Izquierdo: Textos */}
@@ -27,6 +56,7 @@ export default function TaskTopbar() {
           variant="secondary"
           size="sm"
           labelBtn="Crear / Ver categoría"
+          onClick={openCategoryModal}
           className="h-[38px] px-4 rounded-[10px]"
         />
         <Button
@@ -34,8 +64,50 @@ export default function TaskTopbar() {
           size="sm"
           icon={<PlusIcon className="size-4" />}
           labelBtn="Crear nueva tarea"
+          onClick={openTaskModal}
           className="h-[38px] px-4 rounded-[10px]"
         />
+      </div>
+
+      {/* Modal para Crear Tarea */}
+      {isTaskModalOpen && (
+        <Modal
+          width="low"
+          labelConfirm="Crear tarea"
+          labelCancel="Cancelar"
+          Confirm={() => {}}
+          Cancel={closeTaskModal}
+          closeModal={closeTaskModal}
+          modalTitle="Crear tarea"
+          formId="CreateTask"
+          contentModal={<CreateTask onSuccess={handleTaskSuccess} />}
+          typeBtnConfirm="submit"
+        />
+      )}
+
+      {/* Modal para Administrar Categorías */}
+      {isCategoryModalOpen && (
+        <Modal
+          width="large"
+          modalTitle="Administrar Categorías"
+          contentModal={<Category />}
+          closeModal={closeCategoryModal}
+          Cancel={closeCategoryModal}
+          labelCancel="Cerrar"
+          typeBtnConfirm="button"
+        />
+      )}
+
+      {/* Toast Flotante */}
+      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
+        <div className="pointer-events-auto">
+          <Toast
+            titleToast="Se ha creado una nueva tarea"
+            typeToast="success"
+            isOpen={showSuccessToast}
+            onClose={closeSuccessToast}
+          />
+        </div>
       </div>
     </div>
   );

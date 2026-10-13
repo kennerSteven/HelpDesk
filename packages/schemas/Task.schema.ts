@@ -1,13 +1,41 @@
 import { z } from "zod";
 
-export const CreateTaskSchema = z.object({
-  name: z.string().min(1, "El nombre es obligatorio"),
+export const StepSchema = z.object({
+  name: z
+    .string({ message: "El nombre del paso es obligatorio" })
+    .min(1, "El nombre del paso es obligatorio"),
   description: z.string().optional(),
-  dateInit: z.string().min(1, "La fecha de inicio es obligatoria"),
-  dateFinish: z.string().min(1, "La fecha de fin es obligatoria"),
-  priority: z.string().min(1, "Seleccione una prioridad"),
-  categoryId: z.string(),
+  status: z.enum(["PENDING", "DONE"]),
 });
+
+export type StepType = z.infer<typeof StepSchema>;
+
+export const CreateTaskSchema = z.object({
+  name: z
+    .string({ message: "El nombre es obligatorio" })
+    .min(1, "El nombre es obligatorio"),
+  description: z.string().optional(),
+  dateInit: z
+    .string({ message: "La fecha de inicio es obligatoria" })
+    .min(1, "La fecha de inicio es obligatoria"),
+
+  status: z.enum(["PENDING", "COMPLETED", "EXPIRED"]),
+
+  dateFinish: z
+    .string({ message: "La fecha de fin es obligatoria" })
+    .min(1, "La fecha de fin es obligatoria"),
+  priority: z
+    .string({ message: "Seleccione una prioridad" })
+    .min(1, "Seleccione una prioridad"),
+  categoryId: z
+    .string({ message: "Seleccione una categoría" })
+    .min(1, "Seleccione una categoría"),
+  showSteps: z.boolean().optional(),
+  steps: z.array(StepSchema).optional(),
+});
+
+export type priority = "HIGH" | "MEDIUM" | "LOW" | null;
+export type status = "PENDING" | "COMPLETED" | "EXPIRED";
 
 export const TaskResponseSchema = CreateTaskSchema.extend({
   _id: z.string(),

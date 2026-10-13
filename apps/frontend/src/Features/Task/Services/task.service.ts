@@ -24,7 +24,4 @@ export async function deleteTaskService(id: string) {
   return response.data;
 }
 
-export async function deleteTasksBulkService(ids: string[]) {
-  const response = await apiClient.post("/tasks/deleteTasks/bulk", { ids });
-  return response.data;
-}
+

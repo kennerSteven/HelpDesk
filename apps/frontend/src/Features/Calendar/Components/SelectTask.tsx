@@ -1,43 +1,51 @@
-import { useEffect } from "react";
 import Modal from "../../../Components/Modal/Modal";
-import type { SelectTaskProps } from "../Hooks/useSelectTask";
+import type { TaskResponseType } from "@repo/schemas";
 import CreateTask from "../../Task/Components/CreateTask/CreateTask";
-
 import ExistingTaskList from "./ExistingTaskList";
-import useSelectTask from "../Hooks/useSelectTask";
+import useModal from "../../../Hooks/useModal";
+
+export interface SelectTaskProps {
+  onCloseParent?: () => void;
+  onTaskCreated?: () => void;
+  selectedDate?: string;
+  onTaskSelected?: (data: any) => void;
+  onTasksSelected?: (data: any) => void;
+}
 
 export default function SelectTask({
   onCloseParent,
+  onTaskCreated,
   selectedDate,
   onTaskSelected,
   onTasksSelected,
 }: SelectTaskProps) {
+
+  // Control de modal: Crear nueva tarea
   const {
-    isOpenCreateTask,
-    openCreateTaskModal,
-    closeCreateTaskModal,
-    isOpenExistingTask,
-    openExistingTaskModal,
-    closeExistingTaskModal,
-    existingTasks,
-    searchTerm,
-    setSearchTerm,
-    isLoading,
-    errorMessage,
-    loadExistingTasks,
-    handleTasksSelect,
-  } = useSelectTask({
-    onCloseParent,
-    selectedDate,
-    onTaskSelected,
-    onTasksSelected,
-  });
+    isOpen: isCreateTaskOpen,
+    openModal: openCreateTaskModal,
+    closeModal: closeCreateTaskModal,
+  } = useModal();
 
-  useEffect(() => {
-    if (!isOpenExistingTask) return;
+  // Control de modal: Seleccionar tarea existente
+  const {
+    isOpen: isExistingTaskOpen,
+    openModal: openExistingTaskModal,
+    closeModal: closeExistingTaskModal,
+  } = useModal();
 
-    void loadExistingTasks();
-  }, [isOpenExistingTask]);
+  const handleTaskSuccess = () => {
+    closeCreateTaskModal();
+    onCloseParent?.();
+    onTaskCreated?.();
+  };
+
+  const handleExistingTasksSelect = (tasks: TaskResponseType[]) => {
+    onTasksSelected?.(tasks);
+    onTaskSelected?.(tasks[0]);
+    closeExistingTaskModal();
+    onCloseParent?.();
+  };
 
   return (
     <div className="flex flex-col gap-6 p-2">
@@ -165,32 +173,24 @@ export default function SelectTask({
         </div>
       </div>
 
-      {/* Modal para Crear Nueva Tarea (sin confirm ni cancel) */}
-      {isOpenCreateTask && (
+      {/* Modal para Crear Nueva Tarea */}
+      {isCreateTaskOpen && (
         <Modal
           width="medium"
           modalTitle="Nueva Tarea"
           typeBtnConfirm="submit"
           labelConfirm="Crear nueva tarea"
           labelCancel="Cancelar"
-          formId="CreateTask"
           Confirm={() => console.log("")}
-          Cancel={onCloseParent}
+          formId="CreateTask"
+          Cancel={closeCreateTaskModal}
           closeModal={closeCreateTaskModal}
-          contentModal={
-            <CreateTask
-              showButtons={false}
-              onSuccess={() => {
-                closeCreateTaskModal();
-                onCloseParent?.();
-              }}
-            />
-          }
+          contentModal={<CreateTask onSuccess={handleTaskSuccess} />}
         />
       )}
 
-      {/* Modal de Maquetación: Elegir Tarea Existente (sin confirm ni cancel) */}
-      {isOpenExistingTask && (
+      {/* Modal: Elegir Tarea Existente */}
+      {isExistingTaskOpen && (
         <Modal
           width="medium"
           modalTitle="Elegir Tarea Existente"
@@ -198,17 +198,13 @@ export default function SelectTask({
           closeModal={closeExistingTaskModal}
           contentModal={
             <ExistingTaskList
-              tasks={existingTasks}
               selectedDate={selectedDate || ""}
-              searchTerm={searchTerm}
-              isLoading={isLoading}
-              errorMessage={errorMessage}
-              onSearchChange={setSearchTerm}
-              onTasksSelect={handleTasksSelect}
+              onTasksSelect={handleExistingTasksSelect}
             />
           }
         />
       )}
+
     </div>
   );
 }

@@ -1,83 +1,27 @@
-import { useState } from "react";
-import { GetStorageItem } from "../../../Utils/Storage.utils";
-import { createCategory, getCategories } from "../Services/category.service";
-import type { CategoryTypes, Category } from "../../Task/Types/types";
-import type { CategorySchemaType } from "@repo/schemas";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories } from "../Services/category.service";
+import type { CategoryTypes } from "../../Task/Types/types";
+import { categoryKeys, CATEGORIES_QUERY_KEY } from "../Constants/categoryKeys";
 
-interface UseCategoryProps {
-  closeModal?: () => void;
-  onCategoryCreated?: () => void;
-  openToast?: () => void;
-  reset?: () => void;
-}
+export { CATEGORIES_QUERY_KEY };
 
-export default function useCategory({
-  closeModal,
-  onCategoryCreated,
-  openToast,
-  reset,
-}: UseCategoryProps = {}) {
-  const [categories, setCategories] = useState<CategoryTypes[]>([]);
-  const [loadingList, setLoadingList] = useState<boolean>(true);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  async function loadAllCategories() {
-    setLoadingList(true);
-    try {
-      const data = await getCategories();
-      if (Array.isArray(data)) {
-        setCategories(data);
-      } else if (data) {
-        setCategories(data as any);
-      }
-    } catch (error) {
-      console.log("Error al obtener categorías:", error);
-    } finally {
-      setLoadingList(false);
-    }
-  }
-
-  async function GetAllCategories() {
-    return loadAllCategories();
-  }
-
-  async function UpdateCategories() {
-    const updatedCategories = GetStorageItem("category", []) as Category[];
-    console.log("Categorías actualizadas:", updatedCategories);
-    try {
-      const freshCategories = await getCategories();
-      setCategories(freshCategories || []);
-    } catch (err) {
-      console.log("Error al refrescar categorías", err);
-    }
-    closeModal?.();
-  }
-
-  async function onSubmitCategory(data: CategorySchemaType) {
-    setIsSubmitting(true);
-    try {
-      const response = await createCategory(data);
-      if (response) {
-        openToast?.();
-        reset?.();
-        await loadAllCategories();
-        onCategoryCreated?.();
-      }
-    } catch (error) {
-      console.error("Error al crear categoría:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+export default function useCategory(_?: any) {
+  const {
+    data: categories = [],
+    isLoading: loadingList,
+    error,
+    refetch,
+  } = useQuery<CategoryTypes[]>({
+    queryKey: categoryKeys.all,
+    queryFn: getCategories,
+  });
 
   return {
     categories,
-    setCategories,
     loadingList,
-    isSubmitting,
-    loadAllCategories,
-    GetAllCategories,
-    UpdateCategories,
-    onSubmitCategory,
+    error,
+    refetch,
+    GetAllCategories: refetch,
+    UpdateCategories: refetch,
   };
 }

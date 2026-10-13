@@ -25,7 +25,7 @@ export async function GetAllCaalendar(__: any, res: Response) {
     //   throw new Error("Sin calendario de eventos");
     //   return;
     // }
-    return res.status(200).json(calendar);
+    return res.status(200).json(calendar || []);
   } catch (error) {
     res
       .status(500)

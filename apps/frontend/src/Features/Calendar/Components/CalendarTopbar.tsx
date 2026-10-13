@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "../../../Components/Ui/Button";
 import { PlusIcon } from "../../../Components/Icons";
 

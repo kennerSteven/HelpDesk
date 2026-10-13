@@ -60,7 +60,9 @@ export default function PriorityQuickFilter() {
           >
             <div className="flex items-center gap-3.5">
               {card.dotColor ? (
-                <span className={`w-3 h-3 rounded-full shrink-0 ${card.dotColor} shadow-sm`} />
+                <span
+                  className={`w-3 h-3 rounded-full shrink-0 ${card.dotColor} shadow-sm`}
+                />
               ) : (
                 <span className="w-3 h-3 rounded-full shrink-0 bg-transparent" />
               )}
@@ -95,4 +97,3 @@ export default function PriorityQuickFilter() {
     </div>
   );
 }
-

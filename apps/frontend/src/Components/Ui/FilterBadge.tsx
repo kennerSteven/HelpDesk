@@ -1,4 +1,3 @@
-import React from "react";
 
 type ColorTheme = "slate" | "amber" | "blue" | "emerald" | "violet" | "rose";
 

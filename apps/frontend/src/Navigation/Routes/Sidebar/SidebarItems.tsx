@@ -22,7 +22,7 @@ export default function SidebarItem({ item }: SidebarItemProps) {
         <span className="shrink-0 transition-transform duration-150 group-hover:scale-105">
           {item.icon}
         </span>
-        <span className="truncate">{item.label}</span>
+
         {item.badge && (
           <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 group-hover:bg-slate-200">
             {item.badge}

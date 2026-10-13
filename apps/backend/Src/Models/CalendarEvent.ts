@@ -1,24 +1,25 @@
 import mongoose from "mongoose";
-import { ref } from "node:process";
-
 
 const CalendarEvent = new mongoose.Schema({
-    taskId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Task",
-        required: true,
-    },
-    date: {
-        type: String,
-        required: false,
-    },
-    title: {
-        type: String,
-        required: false,
-    }
-
-
+  taskId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Task",
+    required: true,
+  },
+  date: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: false,
+  },
 });
+
+
+
+
+
 
 const CalendarE = mongoose.model("CalendarEvent", CalendarEvent);
 export default CalendarE;

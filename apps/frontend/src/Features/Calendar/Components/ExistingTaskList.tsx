@@ -1,19 +1,12 @@
-import { useState } from "react";
-
 import Button from "../../../Components/Ui/Button";
-import { createCalendar } from "../Services/calendar.service";
 import type { TaskResponseType } from "@repo/schemas";
+import useCreateCalendar from "../Hooks/useCreateCalendar";
 
 
 
 interface ExistingTaskListProps {
-  tasks: TaskResponseType[];
-  searchTerm: string;
-  isLoading: boolean;
   selectedDate: string;
-  errorMessage?: string;
-  onSearchChange: (value: string) => void;
-  onTasksSelect: (tasks: TaskResponseType[]) => void;
+  onTasksSelect?: (tasks: TaskResponseType[]) => void;
 }
 
 const priorityStyles: Record<string, string> = {
@@ -40,44 +33,24 @@ function getPriorityData(priority?: string) {
 }
 
 export default function ExistingTaskList({
-  tasks,
-  searchTerm,
-  isLoading,
-  errorMessage,
-  onSearchChange,
-  onTasksSelect,
   selectedDate,
+  onTasksSelect,
 }: ExistingTaskListProps) {
-
-  
-  const [selectedTasks, setSelectedTasks] = useState<TaskResponseType[]>([]);
-
-  const filteredTasks = tasks.filter((task) =>
-    task.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const toggleTask = (task: TaskResponseType) => {
-    const taskId = task._id;
-
-    setSelectedTasks((currentTasks) =>
-      currentTasks.some((selectedTask) => selectedTask._id === taskId)
-        ? currentTasks.filter((selectedTask) => selectedTask._id !== taskId)
-        : [...currentTasks, task],
-    );
-  };
-
-  async function HandleCreateEvent() {
-    try {
-      const calendar = {
-        date: selectedDate,
-        title: selectedTasks[0].name,
-        taskId: selectedTasks[0]._id,
-      };
-
-      const newCalendar = await createCalendar(calendar);
-      console.log("Calendario Creado!", newCalendar);
-    } catch (error) {}
-  }
+  const {
+    filteredTasks,
+    searchTerm,
+    setSearchTerm,
+    isLoading,
+    errorMessage,
+    selectedTasks,
+    toggleTask,
+    isTaskSelected,
+    handleConfirmSelection,
+    isCreating,
+  } = useCreateCalendar({
+    selectedDate,
+    onTasksSelect,
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -86,7 +59,7 @@ export default function ExistingTaskList({
           type="text"
           placeholder="Buscar tarea existente..."
           value={searchTerm}
-          onChange={(event) => onSearchChange(event.target.value)}
+          onChange={(event) => setSearchTerm(event.target.value)}
           className="w-full rounded-xl border border-zinc-200 bg-zinc-50 py-2.5 pl-10 pr-4 text-sm text-zinc-900 outline-none focus:border-zinc-800 focus:bg-white"
         />
         <svg
@@ -118,14 +91,12 @@ export default function ExistingTaskList({
           <div className="flex max-h-72 flex-col gap-2.5 overflow-y-auto pr-1">
             {filteredTasks.map((task) => {
               const priority = getPriorityData(task.priority);
-              const isSelected = selectedTasks.some(
-                (selectedTask) => selectedTask._id === task._id,
-              );
+              const isSelected = isTaskSelected(task._id);
 
               return (
                 <button
                   type="button"
-                  key={task._id }
+                  key={task._id}
                   onClick={() => toggleTask(task)}
                   aria-pressed={isSelected}
                   className={`group flex w-full items-start justify-between rounded-xl border p-3.5 text-left transition-all hover:border-zinc-500 hover:bg-zinc-50/20 ${
@@ -183,13 +154,11 @@ export default function ExistingTaskList({
             </span>
             <Button
               typeBtn="button"
-              labelBtn="Confirmar selección"
+              labelBtn={isCreating ? "Guardando..." : "Confirmar selección"}
               variant="primary"
               size="sm"
-              disabled={selectedTasks.length === 0}
-              onClick={() => {
-                (onTasksSelect(selectedTasks), HandleCreateEvent());
-              }}
+              disabled={selectedTasks.length === 0 || isCreating}
+              onClick={handleConfirmSelection}
             />
           </div>
         </>

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Modal from "../../../../Components/Modal/Modal";
 import FieldMessageError from "../../../../Components/Common/FieldMessage";
 import Badge from "../../../../Components/Common/Badge";
@@ -8,9 +7,9 @@ import Input from "../../../../Components/Ui/Input";
 import InputDate from "../../../../Components/Ui/InputDate";
 import Select from "../../../../Components/Ui/Select";
 import TextArea from "../../../../Components/Ui/TextArea";
-import { useCreateTaskForm } from "./useCreateTaskForm";
+import Toast from "../../../../Components/Toast/Toast";
+import { useCreateTask } from "./useCreateTask";
 import Category from "../../../Category/Components/Category";
-import type { CreateTaskProps } from "../../Types/types";
 import {
   CalendarIcon,
   PencilIcon,
@@ -24,21 +23,37 @@ import {
   ClockIcon,
   BellIcon,
 } from "../../../../Components/Icons";
+import useModal from "../../../../Hooks/useModal";
+import useCategory from "../../../Category/Hooks/useCategory";
+import useHandleDate from "../../Hooks/useHandleDate";
+import Checkbox from "../../../../Components/Ui/Checkbox";
+import TaskSteps from "./TaskSteps";
 
-export default function CreateTask({ onSuccess }: CreateTaskProps) {
+type props = {
+  onSuccess: () => void;
+};
+
+export default function CreateTask({ onSuccess }: props) {
   const {
+    onSubmit,
     register,
     errors,
     handleSubmit,
-    handleSaveTask,
     setValue,
-    openModal,
-    isOpen,
-    UpdateCategories,
-    categoriesOptions,
     selectedPriority,
     descriptionValue,
     dateInitValue,
+    dateFinishValue,
+    isOpenErrorToast,
+    closeErrorToast,
+    showSteps,
+    watch,
+  } = useCreateTask({ onSuccess });
+
+  const { openModal, isOpen, closeModal } = useModal();
+  const { categories } = useCategory();
+
+  const {
     datePreset,
     handleSelectToday,
     handleSelectTomorrow,
@@ -46,18 +61,26 @@ export default function CreateTask({ onSuccess }: CreateTaskProps) {
     handleCustomDateChange,
     todayString,
     tomorrowString,
-  } = useCreateTaskForm({ onSuccess });
+  } = useHandleDate({
+    setValue,
+    dateInitValue,
+    dateFinishValue,
+  });
+
+  const categoriesOptions = categories.map((c: any) => ({
+    id: c._id,
+    value: c._id,
+    label: c.nameCategory,
+  }));
 
   return (
     <div>
-      {/* Main Form Content */}
-      <div className="">
+      <div>
         <form
           id="CreateTask"
-          onSubmit={handleSubmit(handleSaveTask)}
+          onSubmit={handleSubmit(onSubmit)}
           className="mx-auto flex max-w-2xl flex-col gap-6"
         >
-          {/* Banner Contextual */}
           <div className="flex flex-col gap-3 rounded-[24px] border border-zinc-200/60 bg-gradient-to-br from-zinc-50/80 via-white to-zinc-50/40 p-5 sm:p-6 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
             <div className="flex items-center justify-between">
               <Badge
@@ -76,7 +99,6 @@ export default function CreateTask({ onSuccess }: CreateTaskProps) {
             </div>
           </div>
 
-          {/* Campo Nombre (Componente Reutilizable Input) */}
           <div className="flex flex-col rounded-[24px] border border-zinc-100/80 bg-white p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
             <Input
               name="name"
@@ -90,7 +112,6 @@ export default function CreateTask({ onSuccess }: CreateTaskProps) {
             />
           </div>
 
-          {/* Campo Descripción (Componente Reutilizable TextArea y Buttons) */}
           <div className="flex flex-col rounded-[24px] border border-zinc-100/80 bg-white p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
             <TextArea
               name="description"
@@ -105,6 +126,25 @@ export default function CreateTask({ onSuccess }: CreateTaskProps) {
               placeholder="Añade notas, enlaces de referencia o detalles clave..."
               error={errors?.description?.message as string}
             />
+          </div>
+
+          {/* Pasos / Subtareas de la tarea */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between rounded-[24px] border border-zinc-100/80 bg-white p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+              <Checkbox
+                label="Asignar pasos a la tarea"
+                description="Desglosa la actividad en subtareas o checklist de seguimiento"
+                register={register}
+                name="showSteps"
+              />
+            </div>
+
+            {showSteps && (
+              <TaskSteps
+                steps={watch("steps") || []}
+                onChange={(newSteps) => setValue("steps", newSteps)}
+              />
+            )}
           </div>
 
           {/* Fechas (Planificación temporal con Badges de Fechas Rápidas e Inputs Condicionales) */}
@@ -303,16 +343,27 @@ export default function CreateTask({ onSuccess }: CreateTaskProps) {
         </form>
       </div>
 
-      {/* Modal de Crear Categoría */}
       {isOpen && (
         <Modal
           typeBtnConfirm="submit"
           width="large"
           modalTitle="Administrar Categorías"
           contentModal={<Category />}
-          closeModal={() => UpdateCategories()}
+          closeModal={closeModal}
         />
       )}
+
+      {/* Toast de error */}
+      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
+        <div className="pointer-events-auto">
+          <Toast
+            titleToast="Error al crear la tarea"
+            typeToast="error"
+            isOpen={isOpenErrorToast}
+            onClose={closeErrorToast}
+          />
+        </div>
+      </div>
     </div>
   );
 }

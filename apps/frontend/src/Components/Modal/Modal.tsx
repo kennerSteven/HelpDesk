@@ -34,7 +34,7 @@ export default function Modal({
   closeModal,
 }: props) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-3 sm:p-4 overflow-hidden ">
+    <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/40 p-3 sm:p-4 overflow-hidden ">
       {/* Contenedor principal con altura máxima y flex vertical */}
       <div
         className={`w-[95vw] sm:w-[90vw] ${modalWidths[width]} max-h-[90vh] flex flex-col rounded-[28px] bg-white shadow-2xl overflow-hidden`}

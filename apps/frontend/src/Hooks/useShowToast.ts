@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function useShowToast(initialState = false) {
   const [isOpen, setIsOpen] = useState(initialState);
 
-  const showToast = () => setIsOpen(true);
-  const closeToast = () => setIsOpen(false);
+  const showToast = useCallback(() => setIsOpen(true), []);
+  const closeToast = useCallback(() => setIsOpen(false), []);
 
   return {
     isOpen,

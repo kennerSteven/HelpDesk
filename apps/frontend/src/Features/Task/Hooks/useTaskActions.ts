@@ -1,35 +1,31 @@
 import { useMemo, useState } from "react";
-import type { Dispatch, SetStateAction } from "react";
-import { GetStorageItem, SetStorageItem } from "../../../Utils/Storage.utils";
+
 import { useZodForm } from "../../../Hooks/useZodForm";
 import useShowToast from "../../../Hooks/useShowToast";
 import useModal from "../../../Hooks/useModal";
-
 import type { TaskResponseType } from "@repo/schemas";
 import {
   deleteTaskService,
-  deleteTasksBulkService,
-} from "../Services/task.service";
 
-/**
- * Gestiona los filtros y las acciones principales de las tareas.
- * También controla la confirmación de eliminación y su notificación.
- */
-export default function useTaskActions(
-  tasks: TaskResponseType[],
-  setTasks: Dispatch<SetStateAction<TaskResponseType[]>>,
-) {
+} from "../Services/task.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { taskKeys } from "../Constants/taskKeys";
+
+export default function useTaskActions(tasks: TaskResponseType[]) {
   const { useAppForm } = useZodForm();
   const { register, watch } = useAppForm();
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
+
+  const queryClient = useQueryClient();
   const {
     isOpen: showDelete,
     openModal: openDeleteModal,
     closeModal: closeDeleteModalState,
   } = useModal();
+
   const [selectedTask, setSelectedTask] = useState<TaskResponseType[]>([]);
   const [tasksToDelete, setTasksToDelete] = useState<string[]>([]);
-  console.log("Tarea o tareas seleccionada", selectedTask);
+
   const {
     isOpen: showDeleteToast,
     showToast,
@@ -38,8 +34,8 @@ export default function useTaskActions(
 
   const categoryFilter = watch("categoryFilter");
   const priorityFilter = watch("priority");
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
 
-  /** Limpia la tarea seleccionada para eliminar. */
   const clearDeleteSelection = () => {
     setSelectedTask([]);
   };
@@ -49,22 +45,18 @@ export default function useTaskActions(
     clearDeleteSelection();
   };
 
-  /** Selecciona una tarea y abre el modal de confirmación. */
   const handleDelete = (id: string) => {
-    const taskToDelete = tasks.find((task) => task._id === id);
+    const taskToDelete = safeTasks.find((task) => task._id === id);
     if (!taskToDelete) return;
     setSelectedTask([taskToDelete]);
     openDeleteModal();
   };
 
   const handleBulkDelete = () => {
-    // Convertimos los IDs seleccionados en sus objetos completos
-    // para que el Modal pueda mostrar qué tareas se van a borrar
-    const tasksToDeleteObjects = tasks.filter((task) =>
+    const tasksToDeleteObjects = safeTasks.filter((task) =>
       tasksToDelete.includes(task._id),
     );
     if (tasksToDeleteObjects.length === 0) return;
-
     setSelectedTask(tasksToDeleteObjects);
     openDeleteModal();
   };
@@ -74,7 +66,6 @@ export default function useTaskActions(
       if (prevIds.includes(id)) {
         return prevIds.filter((selectedId) => selectedId !== id);
       }
-
       return [...prevIds, id];
     });
     console.log("Id seleccionados", tasksToDelete);
@@ -84,53 +75,45 @@ export default function useTaskActions(
     setTasksToDelete([]);
   };
 
-  /** Elimina una sola tarea llamando a la API */
+  const deleteMutation = useMutation({
+    mutationFn: deleteTaskService,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: taskKeys.all,
+      });
+      closeDeleteModal();
+      showToast();
+    },
+    onError: (error) => {
+      console.error("Error al eliminar la tarea:", error);
+    },
+  });
+
   const confirmDeleteTask = async (id: string) => {
-    try {
-      await deleteTaskService(id);
-      const remainingTasks = tasks.filter((task) => task._id !== id);
-      setTasks(remainingTasks);
-      SetStorageItem("task", remainingTasks);
-      closeDeleteModal();
-      showToast();
-    } catch (error) {
-      console.error("Error eliminando tarea", error);
-    }
+    deleteMutation.mutate(id);
   };
 
-  /** Elimina varias tareas llamando a la API masiva */
-  const confirmDeleteBulk = async () => {
-    try {
-      await deleteTasksBulkService(tasksToDelete);
-      const remainingTasks = tasks.filter(
-        (task) => !tasksToDelete.includes(task._id),
-      );
-      setTasks(remainingTasks);
-      SetStorageItem("task", remainingTasks);
-      setTasksToDelete([]); // Limpiar selección
-      closeDeleteModal();
-      showToast();
-    } catch (error) {
-      console.error("Error eliminando tareas", error);
-    }
-  };
 
-  /** Recarga las tareas almacenadas en localStorage. */
-  const refreshTasks = () => setTasks(GetStorageItem("task", []));
 
   const filteredTask = useMemo(() => {
-    return tasks.filter((task) => {
-      const matchesCategory =
-        !categoryFilter || task.categoryId === categoryFilter;
+    return safeTasks.filter((task) => {
+      const taskCatId =
+        typeof task.categoryId === "object" && task.categoryId !== null
+          ? (task.categoryId as any)._id
+          : task.categoryId;
+
+      const matchesCategory = !categoryFilter || taskCatId === categoryFilter;
 
       const matchesPriority =
         !priorityFilter || task.priority === priorityFilter;
 
-      const searchInput = !search || task.name === search;
+      const searchInput =
+        !search || task.name?.toLowerCase().includes(search.toLowerCase());
 
       return matchesCategory && matchesPriority && searchInput;
     });
-  }, [tasks, search, categoryFilter, priorityFilter]);
+  }, [safeTasks, search, categoryFilter, priorityFilter]);
 
   return {
     toggleTaskSelection,
@@ -143,12 +126,9 @@ export default function useTaskActions(
     showDeleteToast,
     closeDeleteToast,
     handleDelete,
-
     closeDeleteModal,
     clearDeleteSelection,
     clearTaskSelection,
-    refreshTasks,
     confirmDeleteTask,
-    confirmDeleteBulk,
   };
 }

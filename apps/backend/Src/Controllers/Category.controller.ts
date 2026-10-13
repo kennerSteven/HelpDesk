@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { GetCategory, NewCategory } from "../Services/category.service";
-import Category from "../Models/Category";
-import { CategorySchemaType } from "@repo/schemas";
 
 export async function CreateCategoryController(req: Request, res: Response) {
   try {
@@ -14,14 +12,11 @@ export async function CreateCategoryController(req: Request, res: Response) {
   }
 }
 
-export async function GetAllCategory(__:any,res: Response) {
+export async function GetAllCategory(__: any, res: Response) {
   try {
-    const Categories= await GetCategory();
+    const Categories = await GetCategory();
 
-    if (Categories.length === 0) {
-      return res.status(400).json({ message: "No hay categorias" });
-    }
-    return res.status(200).json(Categories);
+    return res.status(200).json(Categories || []);
   } catch (error) {
     res
       .status(500)

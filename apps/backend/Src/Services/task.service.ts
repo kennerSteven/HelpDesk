@@ -1,7 +1,8 @@
 import Task from "../Models/Task";
 import { CreateTaskSchema, CreateUserSchemaType } from "@repo/schemas";
+import { priority, status } from "@repo/schemas";
 
- async function CreateTask(data: CreateUserSchemaType) {
+async function CreateTask(data: CreateUserSchemaType) {
   const task = await Task.create(data);
   return task;
 }
@@ -26,7 +27,9 @@ async function UpdateTask(id: string, data: Partial<CreateUserSchemaType>) {
   }
 
   // Actualizar la tarea y devolver el documento nuevo
-  const updatedTask = await Task.findByIdAndUpdate(id, data, { new: true }).populate("categoryId");
+  const updatedTask = await Task.findByIdAndUpdate(id, data, {
+    new: true,
+  }).populate("categoryId");
   return updatedTask;
 }
 
@@ -39,21 +42,13 @@ async function DeleteTask(id: string) {
   return { id };
 }
 
-async function DeleteManyTasks(ids: string[]) {
-  if (!ids || ids.length === 0) {
-    throw new Error("No se proporcionaron IDs para eliminar.");
-  }
-  // Buscamos cuántas tareas existen realmente de la lista de IDs
-  const existingCount = await Task.countDocuments({ _id: { $in: ids } });
-  
-  // Eliminamos de un solo golpe todas las que coincidan
-  const result = await Task.deleteMany({ _id: { $in: ids } });
-  
-  return { 
-    deletedCount: result.deletedCount, 
-    requestedCount: ids.length,
-    foundCount: existingCount
-  };
+async function FilterByPriority(filterBy: {
+  priority?: priority;
+  status?: status;
+}) {
+  const filteredTasks = await Task.find(filterBy);
+
+  return filteredTasks;
 }
 
-export { GetTasks, CreateTask, UpdateTask, DeleteTask, DeleteManyTasks };
+export { GetTasks, CreateTask, UpdateTask, DeleteTask, FilterByPriority };

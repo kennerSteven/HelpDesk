@@ -2,46 +2,57 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { useEffect, useState } from "react";
 import { EventCustomContent } from "./EventCustomContent";
 import SelectTask from "./SelectTask";
 import Modal from "../../../Components/Modal/Modal";
 import Toast from "../../../Components/Toast/Toast";
 import CreateTask from "../../Task/Components/CreateTask/CreateTask";
-import {
-  PlusIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "../../../Components/Icons";
-import useCalendar, { type CalendarEvent } from "../Hooks/useCalendar";
-import { getCalendar } from "../Services/calendar.service";
-import { getAllTasks } from "../../Task/Services/task.service";
-import type { TaskResponseType } from "@repo/schemas";
-import Button from "../../../Components/Ui/Button";
-export type { CalendarEvent } from "../Hooks/useCalendar";
+import { ChevronLeftIcon, ChevronRightIcon } from "../../../Components/Icons";
+import useHandleCalendar from "../Hooks/useHandleCalendar";
+import type { CalendarEvent } from "../Types/types";
+import useModal from "../../../Hooks/useModal";
+import useShowToast from "../../../Hooks/useShowToast";
+import useCalendarKpi from "./Kpi/useCalendarKpi";
+import CalendarKpi from "./Kpi/CalendarKpi";
 
 interface CalendarProps {
   initialEvents?: CalendarEvent[];
 }
 
 export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
+  const { Calendar, taskNames } = useCalendarKpi();
+  console.log("Calendar Date", taskNames);
+  console.log("Calendar payload", Calendar);
+  const { isOpen: isOpenCreateTask, closeModal: closeCreateTaskModal } =
+    useModal();
+
+  // Toasts de confirmación
+  const {
+    isOpen: showAssignmentToast,
+    showToast: showAssignmentSuccess,
+    closeToast: closeAssignmentToast,
+  } = useShowToast();
+
+  const {
+    isOpen: showDeleteToast,
+    showToast: showDeleteSuccess,
+    closeToast: closeDeleteToast,
+  } = useShowToast();
+
+  const {
+    isOpen: showCreateSuccessToast,
+    showToast: openCreateSuccessToast,
+    closeToast: closeCreateSuccessToast,
+  } = useShowToast();
+
   const {
     calendarRef,
     events,
-    setEvents,
     currentView,
     calendarTitle,
     selectedDateInfo,
     isOpen,
-    openModal,
     closeModal,
-    isOpenCreateTask,
-    openCreateTaskModal,
-    closeCreateTaskModal,
-    showAssignmentToast,
-    closeAssignmentToast,
-    showDeleteToast,
-    closeDeleteToast,
     handleDatesSet,
     handleDateClick,
     handleEventClick,
@@ -50,54 +61,10 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
     handlePrevMonth,
     handleToday,
     handleChangeView,
-  } = useCalendar(initialEvents);
-
-  // Estados para métricas reales calculadas desde tareas
-  const [allTasksList, setAllTasksList] = useState<TaskResponseType[]>([]);
-
-  // Carga inicial y sincronización de tareas de la API
-  useEffect(() => {
-    async function fetchCalendarAndTasks() {
-      try {
-        const [calendarData, tasksData] = await Promise.all([
-          getCalendar(),
-          getAllTasks(),
-        ]);
-
-        const tasks = Array.isArray(tasksData) ? tasksData : [];
-        setAllTasksList(tasks);
-
-        // Mapa de tareas por ID (el backend ya trae categoryId poblado con { _id, nameCategory })
-        const tasksMap = new Map<string, any>(
-          tasks.map((task: any) => [task._id, task]),
-        );
-
-        if (Array.isArray(calendarData)) {
-          const formatted: CalendarEvent[] = calendarData.map((item: any) => {
-            const task = tasksMap.get(item.taskId) || tasksMap.get(item._id);
-
-            return {
-              id: item._id,
-              title: item.title || task?.name || "Tarea",
-              date: item.date || task?.dateInit,
-              start: item.date || task?.dateInit,
-              allDay: true,
-              category: task?.categoryId?.nameCategory || task?.category,
-              priority: task?.priority,
-              description: task?.description,
-              status: task?.status,
-            };
-          });
-
-          setEvents(formatted);
-        }
-      } catch (error) {
-        console.error("Error al cargar datos del calendario:", error);
-      }
-    }
-
-    void fetchCalendarAndTasks();
-  }, [setEvents]);
+  } = useHandleCalendar(initialEvents, {
+    onAssignmentSuccess: showAssignmentSuccess,
+    onDeleteSuccess: showDeleteSuccess,
+  });
 
   // const totalEventsCount = events.length;
   // const completedTasksCount = allTasksList.filter(
@@ -109,22 +76,20 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
   //   ).length || Math.max(0, totalEventsCount - completedTasksCount);
 
   return (
-    <div
-      className="max-w-[1600px] w-full mx-auto flex flex-col gap-6"
-      data-purpose="application-root"
-    >
+    <div className="max-w-[1600px] w-full mx-auto flex flex-col gap-6 justify-between">
       {/* ========================================================================= */}
       {/* BEGIN: MainContentGrid (Grilla con Calendario + Sidebar de Métricas)     */}
       {/* ========================================================================= */}
+
       <main
-        className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start"
+        className="grid grid-cols-10 xl:grid-cols-10 gap-6 items-start"
         data-purpose="dashboard-layout"
       >
         {/* ======================================================================= */}
-        {/* Columna Izquierda: Vista Principal del Calendario (8 Columnas en XL)     */}
+        {/* Columna Izquierda: Vista Principal del Calendario (6 Columnas en XL)     */}
         {/* ======================================================================= */}
         <section
-          className="xl:col-span-8 bg-white border border-slate-200/80 rounded-2xl shadow-xs p-5 flex flex-col gap-5"
+          className="xl:col-span-7 bg-white border border-slate-200/80 rounded-2xl shadow-xs p-5 flex flex-col gap-5"
           data-purpose="calendar-main-view"
         >
           {/* Subcabecera de Navegación del Calendario */}
@@ -231,15 +196,11 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
         </section>
 
         {/* ======================================================================= */}
-        {/* Columna Derecha: Sidebar de Métricas (4 Columnas en XL)                 */}
+        {/* Columna Derecha: Sidebar de Métricas / KPI (4 Columnas en XL)           */}
         {/* ======================================================================= */}
-        {/* <CalendarKpiSidebar
-          className="xl:col-span-4"
-          totalEvents={totalEventsCount}
-          completedTasks={completedTasksCount}
-          pendingTasks={pendingTasksCount}
-          onPlanForDate={openModal}
-        /> */}
+        <aside className="xl:col-span-3 w-full">
+          <CalendarKpi tasks={taskNames} />
+        </aside>
       </main>
       {/* END: MainContentGrid */}
 
@@ -268,6 +229,17 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
         </div>
       )}
 
+      {showCreateSuccessToast && (
+        <div className="fixed right-6 top-6 z-50 w-full max-w-sm">
+          <Toast
+            titleToast="Se ha creado una nueva tarea"
+            typeToast="success"
+            isOpen={showCreateSuccessToast}
+            onClose={closeCreateSuccessToast}
+          />
+        </div>
+      )}
+
       {/* ========================================================================= */}
       {/* MODALES: Planificación de fecha y Creación de nueva tarea               */}
       {/* ========================================================================= */}
@@ -284,6 +256,7 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
           contentModal={
             <SelectTask
               onCloseParent={closeModal}
+              onTaskCreated={openCreateSuccessToast}
               selectedDate={selectedDateInfo?.dateStr}
               onTasksSelected={handleTasksSelected}
             />
@@ -305,9 +278,9 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
           closeModal={closeCreateTaskModal}
           contentModal={
             <CreateTask
-              showButtons={false}
               onSuccess={() => {
                 closeCreateTaskModal();
+                openCreateSuccessToast();
               }}
             />
           }

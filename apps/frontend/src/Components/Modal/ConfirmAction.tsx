@@ -1,25 +1,9 @@
 import type { ReactNode } from "react";
-import Button from "../Ui/Button";
-
-interface ModalStyle {
-  iconContainer: string;
-  icon: string;
-  deleteButton: string;
-}
-
-const styles: Record<string, ModalStyle> = {
-  danger: {
-    iconContainer:
-      "bg-red-100 text-red-500 ring-4 ring-red-50",
-    icon: "text-red-500",
-    deleteButton: "",
-  },
-};
 
 interface ConfirmActionProps {
   title: string;
   icon: ReactNode;
-  typeModal: "danger";
+  typeModal?: "danger";
   description?: ReactNode;
   onDelete: () => void;
   onCancel: () => void;
@@ -29,13 +13,11 @@ interface ConfirmActionProps {
 export default function ConfirmAction({
   title,
   icon,
-  typeModal,
   description = "Esta acción no se puede deshacer y todos los datos se perderán.",
   onDelete,
   onCancel,
   children,
 }: ConfirmActionProps) {
-  const modalStyles = styles[typeModal];
 
   return (
     <div className="w-[90vw] max-w-[420px] rounded-[32px] bg-white shadow-[0_24px_60px_-15px_rgba(0,0,0,0.2)] ring-1 ring-black/5 overflow-hidden mx-auto p-8">

@@ -4,7 +4,7 @@ import {
   GetAllTasks,
   UpdateTaskController,
   DeleteTaskController,
-  DeleteManyTasksController
+  GetAllTasksFiltered,
 } from "../Controllers/Task.controller";
 import Validate from "../Middleware/Validate.middleware";
 import { CreateTaskSchema } from "@repo/schemas";
@@ -15,6 +15,5 @@ route.post("/createTask", Validate(CreateTaskSchema), CreateTaskController);
 route.get("/getTasks", GetAllTasks);
 route.put("/updateTask/:id", Validate(CreateTaskSchema), UpdateTaskController);
 route.delete("/deleteTask/:id", DeleteTaskController);
-route.post("/deleteTasks/bulk", DeleteManyTasksController);
-
+route.get("/getTasksFiltered", GetAllTasksFiltered);
 export default route;

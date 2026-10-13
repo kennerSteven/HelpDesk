@@ -4,9 +4,10 @@ import {
   GetTasks,
   UpdateTask,
   DeleteTask,
-  DeleteManyTasks,
+  FilterByPriority,
 } from "../Services/task.service";
 import { createCalendarEvent } from "../Services/calendarEvent.service";
+import { priority } from "@repo/schemas";
 
 export async function CreateTaskController(req: Request, res: Response) {
   try {
@@ -45,11 +46,22 @@ export async function UpdateTaskController(req: Request, res: Response) {
 export async function GetAllTasks(__: any, res: Response) {
   try {
     const Tasks = await GetTasks();
+    return res.status(200).json(Tasks || []);
+  } catch (error) {
+    res.status(500).json({ message: "Error al cargar tareas", error: error });
+  }
+}
 
-    if (Tasks.length === 0) {
-      return res.status(400).json({ message: "No hay tareas" });
-    }
-    return res.status(200).json(Tasks);
+export async function GetAllTasksFiltered(req: Request, res: Response) {
+  const { priority, status } = req.query;
+
+  const filters = {
+    ...(typeof priority === "string" && { priority }),
+    ...(typeof status === "string" && { status }),
+  };
+  try {
+    const Tasks = await FilterByPriority(filters as any);
+    return res.status(200).json(Tasks || []);
   } catch (error) {
     res.status(500).json({ message: "Error al cargar tareas", error: error });
   }
@@ -65,22 +77,5 @@ export async function DeleteTaskController(req: Request, res: Response) {
     return res
       .status(400)
       .json({ message: error.message || "Error al eliminar la tarea", error });
-  }
-}
-
-export async function DeleteManyTasksController(req: Request, res: Response) {
-  try {
-    const { ids } = req.body; // Se espera que el frontend envíe { ids: ["id1", "id2"] }
-
-    const result = await DeleteManyTasks(ids);
-
-    return res.status(200).json({
-      message: `${result.deletedCount} tareas eliminadas correctamente`,
-      details: result,
-    });
-  } catch (error: any) {
-    return res
-      .status(400)
-      .json({ message: error.message || "Error al eliminar tareas", error });
   }
 }
