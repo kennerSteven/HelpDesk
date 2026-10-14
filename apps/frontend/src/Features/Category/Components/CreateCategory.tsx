@@ -60,23 +60,19 @@ export default function CreateCategory() {
       </form>
 
       {/* Toast de notificación de éxito: se controla directamente desde useCreateCategory */}
-      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
-        <div className="pointer-events-auto">
-          <Toast
-            titleToast="Categoría creada correctamente"
-            typeToast="success"
-            isOpen={isOpenSuccessToast}
-            onClose={closeSuccessToast}
-          />
+      <Toast
+        titleToast="Categoría creada correctamente"
+        typeToast="success"
+        isOpen={isOpenSuccessToast}
+        onClose={closeSuccessToast}
+      />
 
-          <Toast
-            titleToast="Error al crear la categoría"
-            typeToast="error"
-            isOpen={isOpenErrorToast}
-            onClose={closeErrorToast}
-          />
-        </div>
-      </div>
+      <Toast
+        titleToast="Error al crear la categoría"
+        typeToast="error"
+        isOpen={isOpenErrorToast}
+        onClose={closeErrorToast}
+      />
     </>
   );
 }

@@ -30,12 +30,31 @@ const toastStyles = {
 
 type ToastType = keyof typeof toastStyles;
 
+type ToastPosition =
+  | "top-right"
+  | "top-left"
+  | "top-center"
+  | "bottom-right"
+  | "bottom-left"
+  | "bottom-center";
+
 interface ToastProps {
   titleToast: string;
   typeToast: ToastType;
   isOpen: boolean;
   onClose: () => void;
+  position?: ToastPosition;
+  className?: string;
 }
+
+const positionClasses: Record<ToastPosition, string> = {
+  "top-right": "top-6 right-6",
+  "top-left": "top-6 left-6",
+  "top-center": "top-6 left-1/2 -translate-x-1/2",
+  "bottom-right": "bottom-6 right-6",
+  "bottom-left": "bottom-6 left-6",
+  "bottom-center": "bottom-6 left-1/2 -translate-x-1/2",
+};
 
 const toastIcons: Record<ToastType, ReactNode> = {
   success: (
@@ -68,6 +87,8 @@ export default function Toast({
   typeToast,
   isOpen,
   onClose,
+  position = "top-right",
+  className = "",
 }: ToastProps) {
   const styles = toastStyles[typeToast];
   const [isRendered, setIsRendered] = useState(isOpen);
@@ -78,7 +99,7 @@ export default function Toast({
       setIsRendered(true);
       // Pequeño retraso para permitir que el DOM se actualice antes de animar la entrada
       setTimeout(() => setIsVisible(true), 10);
-      
+
       const timeoutId = setTimeout(() => {
         setIsVisible(false);
         setTimeout(onClose, 400); // Esperar a que termine la animación de salida
@@ -96,29 +117,39 @@ export default function Toast({
 
   return (
     <div
-      className={`flex w-full items-center gap-3.5 rounded-[999px] py-3 px-3.5 transition-all duration-500 ease-[cubic-bezier(0.2,1,0.2,1)] transform ${
-        isVisible ? "translate-y-0 opacity-100 scale-100" : "-translate-y-4 opacity-0 scale-95"
-      } ${styles.container}`}
+      className={`fixed z-50 w-full max-w-sm pointer-events-none ${
+        positionClasses[position] || positionClasses["top-right"]
+      }`}
     >
       <div
-        className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-transform duration-500 delay-100 ${
-          isVisible ? "scale-100" : "scale-50"
-        } ${styles.iconContainer}`}
+        className={`pointer-events-auto flex w-full items-center gap-3.5 rounded-[999px] py-3 px-3.5 transition-all duration-500 ease-[cubic-bezier(0.2,1,0.2,1)] transform ${
+          isVisible ? "translate-y-0 opacity-100 scale-100" : "-translate-y-4 opacity-0 scale-95"
+        } ${styles.container} ${className}`}
       >
-        <svg
-          className={`size-5 ${styles.icon}`}
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={typeToast === "success" ? "0 0 20 20" : "0 0 24 24"}
-          fill={typeToast === "success" ? "currentColor" : "none"}
+        <div
+          className={`flex size-10 shrink-0 items-center justify-center rounded-full transition-transform duration-500 delay-100 ${
+            isVisible ? "scale-100" : "scale-50"
+          } ${styles.iconContainer}`}
         >
-          {toastIcons[typeToast]}
-        </svg>
-      </div>
+          <svg
+            className={`size-5 ${styles.icon}`}
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox={typeToast === "success" ? "0 0 20 20" : "0 0 24 24"}
+            fill={typeToast === "success" ? "currentColor" : "none"}
+          >
+            {toastIcons[typeToast]}
+          </svg>
+        </div>
 
-      <div className="min-w-0 flex-1 pr-2">
-        <p className={`text-[15px] font-semibold tracking-tight leading-snug ${styles.title}`}>{titleToast}</p>
-        <p className={`text-[14px] leading-snug mt-0.5 opacity-90 ${styles.message}`}>{styles.messageText}</p>
+        <div className="min-w-0 flex-1 pr-2">
+          <p className={`text-[15px] font-semibold tracking-tight leading-snug ${styles.title}`}>
+            {titleToast}
+          </p>
+          <p className={`text-[14px] leading-snug mt-0.5 opacity-90 ${styles.message}`}>
+            {styles.messageText}
+          </p>
+        </div>
       </div>
     </div>
   );

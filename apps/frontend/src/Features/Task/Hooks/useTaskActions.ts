@@ -4,10 +4,7 @@ import { useZodForm } from "../../../Hooks/useZodForm";
 import useShowToast from "../../../Hooks/useShowToast";
 import useModal from "../../../Hooks/useModal";
 import type { TaskResponseType } from "@repo/schemas";
-import {
-  deleteTaskService,
-
-} from "../Services/task.service";
+import { deleteTaskService } from "../Services/task.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskKeys } from "../Constants/taskKeys";
 
@@ -93,8 +90,6 @@ export default function useTaskActions(tasks: TaskResponseType[]) {
   const confirmDeleteTask = async (id: string) => {
     deleteMutation.mutate(id);
   };
-
-
 
   const filteredTask = useMemo(() => {
     return safeTasks.filter((task) => {

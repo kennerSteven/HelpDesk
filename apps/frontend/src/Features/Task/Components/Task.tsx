@@ -9,14 +9,13 @@ import useEditTask from "../Hooks/useEditTask";
 import useShowToast from "../../../Hooks/useShowToast";
 import PriorityQuickFilter from "./PriorityQuickFilter";
 import TaskFilters from "./TaskFilters";
-import FilterBadge from "../../../Components/Ui/FilterBadge";
-import Input from "../../../Components/Ui/Input";
-import { SearchIcon } from "../../../Components/Icons";
 import Modal from "../../../Components/Modal/Modal";
 import useTask from "../Hooks/useTask";
 import useModal from "../../../Hooks/useModal";
+import ProjectTasksContainer from "../../Projects/Components/ProjectTasksContainer";
 export default function Task() {
-  const { search, setSearch, Tasks, activeFilter, setActiveFilter } = useTask();
+  const { search, setSearch, Tasks, activeFilter, setActiveFilter, Projects } =
+    useTask();
 
   const {
     isOpen: isCreateOpen,
@@ -36,6 +35,7 @@ export default function Task() {
     closeToast: closeSuccessToast,
   } = useShowToast();
 
+  console.log(Projects);
   const {
     filteredTask,
     selectedTask,
@@ -64,56 +64,89 @@ export default function Task() {
   };
 
   return (
-    <div className=" w-full max-w-[1600px] mx-auto p-6 md:p-8 lg:p-10 space-y-8 font-sans">
-      {/* Main Content (Sidebar + List) */}
-      <div className=" rounded-xl  flex flex-col lg:flex-row gap-8 items-start">
-        {/* Sidebar (30%) */}
-        <aside className="w-full lg:w-[30%] shrink-0 flex flex-col gap-6">
-          <TaskFilters />
+    <div className="w-full max-w-[1700px] mx-auto p-4 md:p-6 lg:p-8 space-y-8 font-sans">
+      {/* Main Content (3 Secciones: Filtros -> Proyectos -> Tareas Normales) */}
+      <div className="rounded-xl flex flex-col xl:flex-row gap-6 items-start w-full">
+        {/* 1. Barra de Filtros (Sidebar) */}
+        <aside className="w-full xl:w-[280px] shrink-0 flex flex-col gap-6">
+          <TaskFilters
+            search={search}
+            onSearchChange={setSearch}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            totalTasks={Tasks.length}
+          />
           <PriorityQuickFilter />
         </aside>
 
-        <div className="w-full lg:w-[70%] space-y-6">
-          {/* Bulk Action Bar */}
-
-          {/* Quick Filters Bar & Search */}
-          <div className="rounded-2xl border border-zinc-200/80 bg-white p-3 sm:px-4 sm:py-3 shadow-[0_2px_12px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto [&::-webkit-scrollbar]:hidden">
-              <FilterBadge
-                label="Todas"
-                isActive={activeFilter === "Todas"}
-                onClick={() => setActiveFilter("Todas")}
-                count={Tasks.length}
-                colorTheme="slate"
-              />
-              <FilterBadge
-                label="Pendiente"
-                isActive={activeFilter === "Pendiente"}
-                onClick={() => setActiveFilter("Pendiente")}
-                colorTheme="amber"
-              />
-              <FilterBadge
-                label="Asignada"
-                isActive={activeFilter === "Asignada"}
-                onClick={() => setActiveFilter("Asignada")}
-                colorTheme="blue"
-              />
-              <FilterBadge
-                label="Completada"
-                isActive={activeFilter === "Completada"}
-                onClick={() => setActiveFilter("Completada")}
-                colorTheme="emerald"
-              />
+        {/* 2. Componentes de Proyectos (al lado derecho de la barra de filtros) */}
+        <div className="w-full xl:w-[420px] 2xl:w-[460px] shrink-0 space-y-4">
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500">
+                Proyectos
+              </span>
+              <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
+                {Projects?.length || 0}
+              </span>
             </div>
+          </div>
 
-            <div className="w-full sm:w-72 shrink-0">
-              <Input
-                name="searchTasks"
-                placeholder="Buscar por nombre..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                icon={<SearchIcon className="size-4 text-zinc-400" />}
-              />
+          {!Projects || Projects.length === 0 ? (
+            <div className="w-full rounded-2xl border border-dashed border-slate-200 bg-white/70 p-8 flex flex-col items-center justify-center text-center gap-3">
+              <div className="size-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                <svg
+                  className="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.8"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                  />
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <h4 className="text-[14px] font-semibold text-slate-700">
+                  No hay proyectos creados
+                </h4>
+                <p className="text-xs text-slate-400 max-w-xs leading-relaxed">
+                  Crea tu primer proyecto desde el botón "+ Nuevo" en los
+                  filtros para agrupar tareas.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4  overflow-y-auto pr-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 [&::-webkit-scrollbar-thumb]:rounded-full">
+              {Projects.map((project: any) => (
+                <ProjectTasksContainer
+                  key={project._id || project.id}
+                  project={project}
+                  onDeleteTask={handleDelete}
+                  onEditTask={(id) => {
+                    selectTaskToEdit(id);
+                    openEditModal();
+                  }}
+                  onAddTask={() => openCreateModal()}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 3. Tareas Normales (a la derecha del componente de proyectos) */}
+        <div className="w-full flex-1 min-w-0 space-y-4">
+          <div className="flex items-center justify-between pb-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500">
+                Tareas Generales
+              </span>
+              <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
+                {filteredTask.length}
+              </span>
             </div>
           </div>
 
@@ -131,7 +164,7 @@ export default function Task() {
               )}
 
               {filteredTask.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[720px] overflow-y-auto pr-2 items-start [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-300">
+                <div className="grid grid-cols gap-2 overflow-y-auto pr-2 items-start [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-zinc-300">
                   {filteredTask.map((task) => (
                     <div key={task._id} className="flex flex-col py-0.5">
                       <TaskCard
@@ -139,6 +172,8 @@ export default function Task() {
                         name={task.name}
                         description={task.description}
                         category={task.categoryId?.nameCategory}
+                        status={task.status}
+                        steps={task.steps}
                         dateInit={task.dateInit}
                         dateFinish={task.dateFinish}
                         priority={task.priority}
@@ -197,41 +232,29 @@ export default function Task() {
         />
       )}
 
-      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
-        <div className="pointer-events-auto">
-          <Toast
-            titleToast="Se ha creado una nueva tarea"
-            typeToast="success"
-            isOpen={showSuccessToast}
-            onClose={closeSuccessToast}
-          />
-        </div>
-      </div>
+      <Toast
+        titleToast="Se ha creado una nueva tarea"
+        typeToast="success"
+        isOpen={showSuccessToast}
+        onClose={closeSuccessToast}
+      />
 
       {showEditToast && (
-        <div className="fixed right-6 top-5 z-50 w-full max-w-sm pointer-events-none">
-          <div className="pointer-events-auto">
-            <Toast
-              titleToast="La tarea se ha actualizado correctamente"
-              typeToast="success"
-              isOpen={showEditToast}
-              onClose={closeEditToast}
-            />
-          </div>
-        </div>
+        <Toast
+          titleToast="La tarea se ha actualizado correctamente"
+          typeToast="success"
+          isOpen={showEditToast}
+          onClose={closeEditToast}
+        />
       )}
 
       {showDeleteToast && (
-        <div className="fixed right-6 top-5 z-50 w-full max-w-sm pointer-events-none">
-          <div className="pointer-events-auto">
-            <Toast
-              titleToast="La tarea se ha eliminado correctamente"
-              typeToast="warning"
-              isOpen={showDeleteToast}
-              onClose={closeDeleteToast}
-            />
-          </div>
-        </div>
+        <Toast
+          titleToast="La tarea se ha eliminado correctamente"
+          typeToast="warning"
+          isOpen={showDeleteToast}
+          onClose={closeDeleteToast}
+        />
       )}
 
       {showDelete && selectedTask.length > 0 && (

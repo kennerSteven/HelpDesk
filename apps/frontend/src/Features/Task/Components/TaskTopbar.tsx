@@ -99,16 +99,12 @@ export default function TaskTopbar() {
       )}
 
       {/* Toast Flotante */}
-      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
-        <div className="pointer-events-auto">
-          <Toast
-            titleToast="Se ha creado una nueva tarea"
-            typeToast="success"
-            isOpen={showSuccessToast}
-            onClose={closeSuccessToast}
-          />
-        </div>
-      </div>
+      <Toast
+        titleToast="Se ha creado una nueva tarea"
+        typeToast="success"
+        isOpen={showSuccessToast}
+        onClose={closeSuccessToast}
+      />
     </div>
   );
 }

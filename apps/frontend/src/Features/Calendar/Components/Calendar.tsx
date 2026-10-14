@@ -208,36 +208,30 @@ export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
       {/* NOTIFICACIONES TOAST                                                     */}
       {/* ========================================================================= */}
       {showAssignmentToast && (
-        <div className="fixed right-6 top-6 z-50 w-full max-w-sm">
-          <Toast
-            titleToast="Tareas asignadas correctamente"
-            typeToast="success"
-            isOpen={showAssignmentToast}
-            onClose={closeAssignmentToast}
-          />
-        </div>
+        <Toast
+          titleToast="Tareas asignadas correctamente"
+          typeToast="success"
+          isOpen={showAssignmentToast}
+          onClose={closeAssignmentToast}
+        />
       )}
 
       {showDeleteToast && (
-        <div className="fixed right-6 top-6 z-50 w-full max-w-sm">
-          <Toast
-            titleToast="Evento eliminado correctamente"
-            typeToast="warning"
-            isOpen={showDeleteToast}
-            onClose={closeDeleteToast}
-          />
-        </div>
+        <Toast
+          titleToast="Evento eliminado correctamente"
+          typeToast="warning"
+          isOpen={showDeleteToast}
+          onClose={closeDeleteToast}
+        />
       )}
 
       {showCreateSuccessToast && (
-        <div className="fixed right-6 top-6 z-50 w-full max-w-sm">
-          <Toast
-            titleToast="Se ha creado una nueva tarea"
-            typeToast="success"
-            isOpen={showCreateSuccessToast}
-            onClose={closeCreateSuccessToast}
-          />
-        </div>
+        <Toast
+          titleToast="Se ha creado una nueva tarea"
+          typeToast="success"
+          isOpen={showCreateSuccessToast}
+          onClose={closeCreateSuccessToast}
+        />
       )}
 
       {/* ========================================================================= */}

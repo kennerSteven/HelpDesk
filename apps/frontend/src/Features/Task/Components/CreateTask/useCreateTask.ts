@@ -46,7 +46,7 @@ export function useCreateTask({ onSuccess }: UseCreateTaskFormProps) {
   const descriptionValue = watch("description") || "";
   const dateInitValue = watch("dateInit") || "";
   const dateFinishValue = watch("dateFinish") || "";
-const showSteps = watch("showSteps") || false;
+  const showSteps = watch("showSteps") || false;
   function onSubmit(data: TaskResponseType) {
     mutation.mutate(data);
   }
@@ -65,6 +65,6 @@ const showSteps = watch("showSteps") || false;
     isOpenErrorToast,
     closeErrorToast,
     isSubmitting: mutation.isPending,
-    showSteps
+    showSteps,
   };
 }

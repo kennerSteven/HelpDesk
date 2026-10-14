@@ -24,9 +24,7 @@ export const CreateTaskSchema = z.object({
   dateFinish: z
     .string({ message: "La fecha de fin es obligatoria" })
     .min(1, "La fecha de fin es obligatoria"),
-  priority: z
-    .string({ message: "Seleccione una prioridad" })
-    .min(1, "Seleccione una prioridad"),
+  priority: z.enum(["HIGH", "MEDIUM", "LOW"]),
   categoryId: z
     .string({ message: "Seleccione una categoría" })
     .min(1, "Seleccione una categoría"),

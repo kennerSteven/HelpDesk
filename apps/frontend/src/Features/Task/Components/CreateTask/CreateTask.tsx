@@ -354,16 +354,12 @@ export default function CreateTask({ onSuccess }: props) {
       )}
 
       {/* Toast de error */}
-      <div className="fixed right-6 top-6 z-50 w-full max-w-sm pointer-events-none">
-        <div className="pointer-events-auto">
-          <Toast
-            titleToast="Error al crear la tarea"
-            typeToast="error"
-            isOpen={isOpenErrorToast}
-            onClose={closeErrorToast}
-          />
-        </div>
-      </div>
+      <Toast
+        titleToast="Error al crear la tarea"
+        typeToast="error"
+        isOpen={isOpenErrorToast}
+        onClose={closeErrorToast}
+      />
     </div>
   );
 }

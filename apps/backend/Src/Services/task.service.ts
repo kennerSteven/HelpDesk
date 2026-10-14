@@ -1,8 +1,8 @@
 import Task from "../Models/Task";
-import { CreateTaskSchema, CreateUserSchemaType } from "@repo/schemas";
+import { CreateTaskSchemaType } from "@repo/schemas";
 import { priority, status } from "@repo/schemas";
 
-async function CreateTask(data: CreateUserSchemaType) {
+async function CreateTask(data: CreateTaskSchemaType) {
   const task = await Task.create(data);
   return task;
 }
@@ -14,7 +14,7 @@ async function GetTasks() {
   return Tasks;
 }
 
-async function UpdateTask(id: string, data: Partial<CreateUserSchemaType>) {
+async function UpdateTask(id: string, data: Partial<CreateTaskSchemaType>) {
   // Validar que el payload no venga vacío
   if (!data || Object.keys(data).length === 0) {
     throw new Error("El payload está vacío. No hay datos para actualizar.");
