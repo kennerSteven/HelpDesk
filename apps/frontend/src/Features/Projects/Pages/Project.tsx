@@ -13,13 +13,8 @@ import useTaskActions from "../../Task/Hooks/useTaskActions";
 import useTask from "../../Task/Hooks/useTask";
 
 export default function ProjectPage() {
-  const {
-    search,
-    setSearch,
-    activeFilter,
-    setActiveFilter,
-    filteredProjects
-  } = useProjects();
+  const { search, setSearch, activeFilter, setActiveFilter, filteredProjects } =
+    useProjects();
 
   const { Tasks = [] } = useTask();
 
@@ -56,8 +51,6 @@ export default function ProjectPage() {
     closeCreateTaskModal();
     openTaskSuccessToast();
   };
-
-
 
   return (
     <div className="w-full mx-auto p-4 md:p-6 lg:p-8 space-y-8 font-sans">

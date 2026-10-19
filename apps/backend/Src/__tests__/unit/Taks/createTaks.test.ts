@@ -1,25 +1,17 @@
-import mongoose from "mongoose";
-import { ConnectDb } from "../../../Config/firebase";
-import Task from "../../../Models/Task";
-import { CreateTask } from "../../../Services/task.service";
+import { CreateTask, DeleteTask } from "../../../Services/task.service";
 import { mockTaskWithoutSteps, mockTaskWithSteps } from "../../mocks/task.mock";
 
 describe("Task Manager", () => {
   let taskWithStepsId: string;
   let taskWithoutStepsId: string;
 
-  beforeAll(async () => {
-    await ConnectDb();
-  });
-
   afterAll(async () => {
     if (taskWithStepsId) {
-      await Task.findByIdAndDelete(taskWithStepsId);
+      await DeleteTask(taskWithStepsId);
     }
     if (taskWithoutStepsId) {
-      await Task.findByIdAndDelete(taskWithoutStepsId);
+      await DeleteTask(taskWithoutStepsId);
     }
-    await mongoose.connection.close();
   });
 
   describe("Create Task with steps", () => {
@@ -31,7 +23,7 @@ describe("Task Manager", () => {
 
       expect(DataWithSteps).toBeDefined();
       expect(taskWithStepsId).toBeDefined();
-      console.log("2. Tarea guardada en MongoDB con ID:", taskWithStepsId);
+      console.log("2. Tarea guardada con ID:", taskWithStepsId);
     });
   });
 
@@ -45,7 +37,3 @@ describe("Task Manager", () => {
     });
   });
 });
-
-function async() {
-  throw new Error("Function not implemented.");
-}
