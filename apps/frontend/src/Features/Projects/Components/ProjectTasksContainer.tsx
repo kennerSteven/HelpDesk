@@ -1,6 +1,6 @@
-import React from "react";
 import TaskCard from "../../Task/Components/TaskCard";
 import { PlusIcon } from "../../../Components/Icons";
+import projectColor from "../../../Utils/AssignColor";
 
 export interface ProjectType {
   _id?: string;
@@ -9,6 +9,7 @@ export interface ProjectType {
   dateInit: string;
   dateFinish: string;
   color?: "RED" | "BLUE" | "YELLOW" | "GREEN" | "PURPLE" | string;
+  status?: string;
   tasks?: any[];
 }
 
@@ -19,53 +20,35 @@ interface ProjectTasksContainerProps {
   onAddTask?: (projectId?: string) => void;
 }
 
-// Configuración de estilos y temas para los 5 colores en mayúsculas
-const COLOR_CONFIG: Record<
+const PROJECT_STATUS_CONFIG: Record<
   string,
-  {
-    dotClass: string;
-    badgeClass: string;
-    borderTopClass: string;
-    cardBorder: string;
-    textAccent: string;
-  }
+  { label: string; badgeClass: string; dotClass: string }
 > = {
-  RED: {
-    dotClass: "bg-rose-400",
-    badgeClass: "bg-rose-50 text-rose-700 border-rose-200",
-    borderTopClass: "bg-rose-400",
-    cardBorder: "border-rose-200/70",
-    textAccent: "text-rose-600",
+  COMPLETED: {
+    label: "Completado",
+    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200/90",
+    dotClass: "bg-emerald-500",
   },
-  BLUE: {
-    dotClass: "bg-sky-400",
-    badgeClass: "bg-sky-50 text-sky-700 border-sky-200",
-    borderTopClass: "bg-sky-400",
-    cardBorder: "border-sky-200/70",
-    textAccent: "text-sky-600",
+  IN_PROGRESS: {
+    label: "En progreso",
+    badgeClass: "bg-sky-50 text-sky-700 border-sky-200/90",
+    dotClass: "bg-sky-500 animate-pulse",
   },
-  YELLOW: {
-    dotClass: "bg-amber-400",
-    badgeClass: "bg-amber-50 text-amber-700 border-amber-200",
-    borderTopClass: "bg-amber-400",
-    cardBorder: "border-amber-200/70",
-    textAccent: "text-amber-600",
-  },
-  GREEN: {
-    dotClass: "bg-emerald-400",
-    badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    borderTopClass: "bg-emerald-400",
-    cardBorder: "border-emerald-200/70",
-    textAccent: "text-emerald-600",
-  },
-  PURPLE: {
-    dotClass: "bg-purple-400",
-    badgeClass: "bg-purple-50 text-purple-700 border-purple-200",
-    borderTopClass: "bg-purple-400",
-    cardBorder: "border-purple-200/70",
-    textAccent: "text-purple-600",
+  PENDING: {
+    label: "Pendiente",
+    badgeClass: "bg-amber-50 text-amber-700 border-amber-200/90",
+    dotClass: "bg-amber-500",
   },
 };
+
+function getProjectStatus(statusOrProject?: string | ProjectType) {
+  const status =
+    typeof statusOrProject === "object" && statusOrProject !== null
+      ? statusOrProject.status
+      : statusOrProject;
+  const normalized = status ? String(status).toUpperCase() : "PENDING";
+  return PROJECT_STATUS_CONFIG[normalized] || PROJECT_STATUS_CONFIG.PENDING;
+}
 
 export default function ProjectTasksContainer({
   project,
@@ -73,14 +56,17 @@ export default function ProjectTasksContainer({
   onEditTask,
   onAddTask,
 }: ProjectTasksContainerProps) {
-  const normalizedColor = project.color?.toUpperCase?.() || "BLUE";
-  const colorTheme = COLOR_CONFIG[normalizedColor] || COLOR_CONFIG.BLUE;
   const tasks = project.tasks || [];
   const hasTasks = tasks.length > 0;
+  const statusInfo = getProjectStatus(project.status);
+  const completedTasksCount = tasks.filter(
+    (t: any) => t.status === "COMPLETED" || t.status === "DONE"
+  ).length;
+
   return (
-    <article className="w-full rounded-2xl border border-slate-200/90 bg-white shadow-xs overflow-hidden transition-all duration-200 hover:shadow-sm">
+    <article className="w-full rounded-2xl border border-slate-200/90 bg-white shadow-xs overflow-hidden transition-all duration-200 hover:shadow-sm flex flex-col justify-between">
       {/* Barra superior de acento con el color del proyecto */}
-      <div className={`h-1.5 w-full ${colorTheme.borderTopClass}`} />
+      <div className={`h-1.5 w-full ${projectColor(project.color)}`} />
 
       <div className="p-5 flex flex-col gap-4">
         {/* Encabezado del Proyecto */}
@@ -88,7 +74,7 @@ export default function ProjectTasksContainer({
           <div className="flex flex-col gap-1 min-w-0">
             <div className="flex items-center gap-2">
               <span
-                className={`size-2.5 rounded-full shrink-0 ${colorTheme.dotClass}`}
+                className={`size-2.5 rounded-full shrink-0 ${projectColor(project.color)}`}
               />
               <h3 className="text-[16px] font-bold text-slate-900 tracking-tight truncate">
                 {project.nameProject}
@@ -103,9 +89,7 @@ export default function ProjectTasksContainer({
           </div>
 
           {/* Badge del contador de tareas */}
-          <span
-            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 ${colorTheme.badgeClass}`}
-          >
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 bg-slate-100 text-slate-600 border-slate-200">
             {tasks.length} {tasks.length === 1 ? "tarea" : "tareas"}
           </span>
         </div>
@@ -193,6 +177,31 @@ export default function ProjectTasksContainer({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Footer del Proyecto: Estado y progreso */}
+      <div className="px-5 py-3 bg-slate-50/75 border-t border-slate-100 flex items-center justify-between text-xs mt-auto">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            Estado
+          </span>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${statusInfo.badgeClass}`}
+          >
+            <span className={`size-1.5 rounded-full ${statusInfo.dotClass}`} />
+            {statusInfo.label}
+          </span>
+        </div>
+
+        {hasTasks ? (
+          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+            <span>
+              {completedTasksCount} de {tasks.length} completadas
+            </span>
+          </div>
+        ) : (
+          <span className="text-[11px] text-slate-400">Sin tareas creadas</span>
+        )}
       </div>
     </article>
   );

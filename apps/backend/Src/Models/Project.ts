@@ -32,6 +32,18 @@ const projectSchema = new mongoose.Schema({
     ],
     default: [],
   },
+  status: {
+    type: String,
+    enum: ["ALL","PENDING", "IN_PROGRESS", "COMPLETED"],
+    default: "PENDING",
+    required: true,
+  },
+  priority: {
+    type: String,
+    enum: ["LOW", "MEDIUM", "HIGH"],
+    default: "MEDIUM",
+    required: true,
+  },
 });
 
 const Project = mongoose.model("Project", projectSchema);

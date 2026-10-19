@@ -2,10 +2,11 @@ import React from "react";
 import Input from "../../../Components/Ui/Input";
 import InputDate from "../../../Components/Ui/InputDate";
 import TextArea from "../../../Components/Ui/TextArea";
-import Button from "../../../Components/Ui/Button";
 import FieldMessage from "../../../Components/Common/FieldMessage";
 import useCreateProject from "../Hooks/useCreateProject";
 import SelectColor from "../../../Components/Ui/SelectColor";
+import { BellIcon } from "../../../Components/Icons";
+import Badge from "../../../Components/Common/Badge";
 
 interface CreateProjectProps {
   onClose?: () => void;
@@ -13,14 +14,8 @@ interface CreateProjectProps {
 }
 
 export default function CreateProject({ onClose }: CreateProjectProps = {}) {
-  const {
-    register,
-    errors,
-    handleSubmit,
-    onSubmit,
-    setValue,
-    isSubmitting,
-  } = useCreateProject({ onClose });
+  const { register, errors, handleSubmit, onSubmit, setValue } =
+    useCreateProject({ onClose });
 
   return (
     <form
@@ -118,7 +113,9 @@ export default function CreateProject({ onClose }: CreateProjectProps = {}) {
               </span>
             </div>
             <p className="text-xs text-slate-500 max-w-sm leading-relaxed">
-              Elige un color para identificar este proyecto y sus tareas tanto en el calendario como en el módulo de gestión de tareas y proyectos.
+              Elige un color para identificar este proyecto y sus tareas tanto
+              en el calendario como en el módulo de gestión de tareas y
+              proyectos.
             </p>
           </div>
 
@@ -128,6 +125,26 @@ export default function CreateProject({ onClose }: CreateProjectProps = {}) {
               onChange={(colorId: string) =>
                 setValue("color", colorId, { shouldValidate: true })
               }
+            />
+          </div>
+          <div className="flex items-center justify-between rounded-[24px] border border-zinc-100/80 bg-white p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+            <div className="flex items-center gap-4">
+              <div className="flex size-11 items-center justify-center rounded-[14px] bg-amber-50 text-amber-600">
+                <BellIcon className="size-5.5" />
+              </div>
+              <div>
+                <span className="block text-[15px] font-semibold tracking-tight text-zinc-900">
+                  Estado inicial: Pendiente
+                </span>
+                <span className="text-[13px] text-zinc-500 mt-0.5 block">
+                  La tarea iniciará en estado activo por defecto
+                </span>
+              </div>
+            </div>
+            <Badge
+              title="Pendiente"
+              variant="warning"
+              icon={<span className="size-1.5 rounded-full bg-amber-500" />}
             />
           </div>
         </div>

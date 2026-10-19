@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CreateTaskSchema } from "./Task.schema";
 
 export const PROJECT_COLORS = [
   "RED",
@@ -8,8 +7,6 @@ export const PROJECT_COLORS = [
   "GREEN",
   "PURPLE",
 ] as const;
-
-export type ProjectColorType = (typeof PROJECT_COLORS)[number];
 
 export const CreateProjectSchema = z.object({
   nameProject: z
@@ -24,7 +21,13 @@ export const CreateProjectSchema = z.object({
     .min(1, "La fecha estimada de finalización es obligatoria"),
   color: z.enum(PROJECT_COLORS).optional(),
   tasks: z.array(z.string()).optional(),
+  status: z
+    .enum(["ALL", "PENDING", "IN_PROGRESS", "COMPLETED"])
+    .default("PENDING"),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM").optional(),
 });
 
 export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;
 export type ProjectSchemaType = CreateProjectSchemaType;
+export type ProjectStatus = z.infer<typeof CreateProjectSchema>["status"];
+export type ProjectPriority = z.infer<typeof CreateProjectSchema>["priority"];

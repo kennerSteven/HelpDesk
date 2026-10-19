@@ -19,8 +19,6 @@ export default function useTask() {
     queryFn: getProject,
   });
 
-  console.log("Tareas cargadas useQuery", Tasks);
-  console.log("Proyectos cargados useQuery", Projects);
   return {
     search,
     setSearch,

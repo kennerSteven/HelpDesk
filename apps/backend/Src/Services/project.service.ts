@@ -1,5 +1,5 @@
 import Project from "../Models/Project";
-import { CreateProjectSchemaType } from "@repo/schemas";
+import { CreateProjectSchemaType, Filters } from "@repo/schemas";
 
 async function CreateProject(data: CreateProjectSchemaType) {
   const project = await Project.create(data);
@@ -11,6 +11,11 @@ async function GetProjects() {
   return projects;
 }
 
+async function FilterProjects(filter: Filters) {
+  const projects = await Project.find(filter);
+  return projects;
+}
+
 async function GetProjectById(id: string) {
   const project = await Project.findById(id).populate("tasks");
   if (!project) {
@@ -19,7 +24,10 @@ async function GetProjectById(id: string) {
   return project;
 }
 
-async function UpdateProject(id: string, data: Partial<CreateProjectSchemaType>) {
+async function UpdateProject(
+  id: string,
+  data: Partial<CreateProjectSchemaType>,
+) {
   if (!data || Object.keys(data).length === 0) {
     throw new Error("El payload está vacío. No hay datos para actualizar.");
   }
@@ -49,6 +57,7 @@ async function DeleteProject(id: string) {
 export {
   CreateProject,
   GetProjects,
+  FilterProjects,
   GetProjectById,
   UpdateProject,
   DeleteProject,

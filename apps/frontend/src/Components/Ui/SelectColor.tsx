@@ -1,45 +1,14 @@
 import { useState } from "react";
-
+import { COLORS } from "../Common/colors";
 // Los 5 colores en tonos pasteles definidos en inglés y mayúsculas
-export const COLORS = {
-  RED: {
-    id: "RED",
-    name: "Red",
-    hex: "#FDA4AF",
-    bgClass: "bg-rose-200",
-    borderClass: "border-rose-300",
-  },
-  BLUE: {
-    id: "BLUE",
-    name: "Blue",
-    hex: "#BAE6FD",
-    bgClass: "bg-sky-200",
-    borderClass: "border-sky-300",
-  },
-  YELLOW: {
-    id: "YELLOW",
-    name: "Yellow",
-    hex: "#FEF08A",
-    bgClass: "bg-amber-200",
-    borderClass: "border-amber-300",
-  },
-  GREEN: {
-    id: "GREEN",
-    name: "Green",
-    hex: "#A7F3D0",
-    bgClass: "bg-emerald-200",
-    borderClass: "border-emerald-300",
-  },
-  PURPLE: {
-    id: "PURPLE",
-    name: "Purple",
-    hex: "#E9D5FF",
-    bgClass: "bg-purple-200",
-    borderClass: "border-purple-300",
-  },
-};
 
-export const PROJECT_COLORS = ["RED", "BLUE", "YELLOW", "GREEN", "PURPLE"] as const;
+export const PROJECT_COLORS = [
+  "RED",
+  "BLUE",
+  "YELLOW",
+  "GREEN",
+  "PURPLE",
+] as const;
 export const AVAILABLE_COLORS = Object.values(COLORS);
 
 // Tarjeta individual de color cuadrada que recibe el prop onclick
@@ -92,14 +61,7 @@ export function ColorCard(props: any) {
 
 // Componente principal que contiene literalmente los 5 colores con su prop onclick
 export default function SelectColor(props: any) {
-  const {
-    value,
-    onChange,
-    onclick,
-    onClick,
-    className = "",
-    ...rest
-  } = props;
+  const { value, onChange, onclick, onClick, className = "", ...rest } = props;
 
   const [selected, setSelected] = useState<any>(value || "BLUE");
 
@@ -157,5 +119,3 @@ export default function SelectColor(props: any) {
     </div>
   );
 }
-
-

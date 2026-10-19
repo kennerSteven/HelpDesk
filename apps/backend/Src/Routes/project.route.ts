@@ -12,12 +12,17 @@ import { CreateProjectSchema } from "@repo/schemas";
 const route = Router();
 
 // Rutas de creación
-route.post("/createProject", Validate(CreateProjectSchema), CreateProjectController);
+route.post(
+  "/createProject",
+  Validate(CreateProjectSchema),
+  CreateProjectController,
+);
 route.post("/", Validate(CreateProjectSchema), CreateProjectController);
 
 // Rutas de consulta
-route.get("/getProjects", GetAllProjectsController);
 route.get("/", GetAllProjectsController);
+route.get("/getProjects", GetAllProjectsController);
+route.get("/getProjectsFiltered", GetAllProjectsController);
 route.get("/getProject/:id", GetProjectByIdController);
 route.get("/:id", GetProjectByIdController);
 

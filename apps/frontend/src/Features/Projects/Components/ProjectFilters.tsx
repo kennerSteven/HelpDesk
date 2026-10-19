@@ -2,11 +2,14 @@ import { useState } from "react";
 import { SearchIcon } from "../../../Components/Icons";
 import useModal from "../../../Hooks/useModal";
 import Modal from "../../../Components/Modal/Modal";
-import CreateProject from "../../Projects/Components/CreateProject";
+import CreateProject from "./CreateProject";
 import useShowToast from "../../../Hooks/useShowToast";
 import Toast from "../../../Components/Toast/Toast";
+import useProjects from "../Hooks/useProjects";
 
-interface TaskFiltersProps {
+import projectColor from "../../../Utils/AssignColor";
+
+export interface ProjectFiltersProps {
   search?: string;
   onSearchChange?: (val: string) => void;
   activeFilter?: string;
@@ -14,15 +17,16 @@ interface TaskFiltersProps {
   totalTasks?: number;
 }
 
-export default function TaskFilters({
+export default function ProjectFilters({
   search = "",
   onSearchChange,
-  activeFilter = "Todas",
+  activeFilter,
   onFilterChange,
   totalTasks = 12,
-}: TaskFiltersProps) {
+}: ProjectFiltersProps) {
   const [internalSearch, setInternalSearch] = useState(search);
   const [selectedProject, setSelectedProject] = useState("all");
+  const { filteredProjects } = useProjects();
   const {
     openModal: openCreateProject,
     isOpen: isOpenCreateProject,
@@ -46,37 +50,10 @@ export default function TaskFilters({
   };
 
   const statuses = [
-    { label: "Todas", count: totalTasks },
-    { label: "Pendiente" },
-    { label: "Asignada" },
-    { label: "Completada" },
-  ];
-
-  const projects = [
-    {
-      id: "all",
-      name: "Todos los proyectos",
-      count: 6,
-      dotColor: "bg-slate-900",
-    },
-    {
-      id: "design",
-      name: "Diseño & UX",
-      count: 2,
-      dotColor: "bg-purple-500",
-    },
-    {
-      id: "frontend",
-      name: "Desarrollo Frontend",
-      count: 2,
-      dotColor: "bg-blue-500",
-    },
-    {
-      id: "research",
-      name: "Investigación",
-      count: 2,
-      dotColor: "bg-emerald-500",
-    },
+    { label: "Todas", count: totalTasks, value: "ALL" },
+    { label: "Pendiente", value: "PENDING" },
+    { label: "En proceso", value: "IN_PROGRESS" },
+    { label: "Completada", value: "COMPLETED" },
   ];
 
   const dueDates = [
@@ -106,12 +83,12 @@ export default function TaskFilters({
         </span>
         <div className="grid grid-cols-2 gap-2">
           {statuses.map((item) => {
-            const isActive = activeFilter === item.label;
+            const isActive = activeFilter === item.value;
             return (
               <button
                 key={item.label}
                 type="button"
-                onClick={() => onFilterChange?.(item.label)}
+                onClick={() => onFilterChange?.(item.value)}
                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all cursor-pointer ${
                   isActive
                     ? "bg-[#0B132B] text-white font-semibold shadow-sm"
@@ -152,12 +129,12 @@ export default function TaskFilters({
         </div>
 
         <div className="space-y-1">
-          {projects.map((project) => {
-            const isSelected = selectedProject === project.id;
+          {(filteredProjects || []).map((project: any) => {
+            const isSelected = selectedProject === project._id;
             return (
               <div
-                key={project.id}
-                onClick={() => setSelectedProject(project.id)}
+                key={project._id}
+                onClick={() => setSelectedProject(project._id)}
                 className={`flex items-center justify-between px-3 py-2 rounded-xl transition-colors cursor-pointer ${
                   isSelected
                     ? "bg-slate-100/90 text-slate-900 font-semibold"
@@ -166,9 +143,11 @@ export default function TaskFilters({
               >
                 <div className="flex items-center gap-2.5">
                   <span
-                    className={`size-2 rounded-full shrink-0 ${project.dotColor}`}
+                    className={`size-2 rounded-full shrink-0 ${projectColor(project.color)}`}
                   />
-                  <span className="text-sm leading-tight">{project.name}</span>
+                  <span className="text-sm leading-tight">
+                    {project.nameProject}
+                  </span>
                 </div>
                 <span
                   className={`text-xs ${
@@ -177,7 +156,7 @@ export default function TaskFilters({
                       : "font-medium text-slate-400"
                   }`}
                 >
-                  {project.count}
+                  {project.tasks.length}
                 </span>
               </div>
             );
@@ -245,3 +224,5 @@ export default function TaskFilters({
     </div>
   );
 }
+
+export { ProjectFilters as TaskFilters };

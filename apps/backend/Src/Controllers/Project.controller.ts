@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import {
   CreateProject,
   GetProjects,
+  FilterProjects,
   GetProjectById,
   UpdateProject,
   DeleteProject,
 } from "../Services/project.service";
+import { Filters } from "@repo/schemas";
 
 export async function CreateProjectController(req: Request, res: Response) {
   try {
@@ -22,9 +24,20 @@ export async function CreateProjectController(req: Request, res: Response) {
   }
 }
 
-export async function GetAllProjectsController(_: Request, res: Response) {
+export async function GetAllProjectsController(req: Request, res: Response) {
   try {
-    const projects = await GetProjects();
+    const { status, priority } = req.query;
+
+    const filter: Filters = {
+      ...(typeof status === "string" && { status: status as Filters["status"] }),
+      ...(typeof priority === "string" && { priority: priority as Filters["priority"] }),
+    };
+
+    const hasFilters = Boolean(filter.status || filter.priority);
+    const projects = hasFilters
+      ? await FilterProjects(filter)
+      : await GetProjects();
+
     return res.status(200).json(projects || []);
   } catch (error: any) {
     return res.status(500).json({
@@ -33,6 +46,7 @@ export async function GetAllProjectsController(_: Request, res: Response) {
     });
   }
 }
+
 
 export async function GetProjectByIdController(req: Request, res: Response) {
   try {

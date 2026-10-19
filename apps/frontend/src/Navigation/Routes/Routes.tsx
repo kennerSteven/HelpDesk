@@ -1,14 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "../../Features/Login/Components/Login";
 import ProtectedRoute from "./ProtectedRoute";
-
 import CreateNewUser from "../../Features/Login/Components/CreateNewUser";
-import Task from "../../Features/Task/Components/Task";
 
+import ProjectPage from "../../Features/Projects/Pages/Project";
 import DashboardLayout from "../../Layouts/DashboardLayout";
 import CalendarPage from "../../Features/Calendar/Page/CalendarPage";
-
-import TaskTopbar from "../../Features/Task/Components/TaskTopbar";
+import ProjectTopbar from "../../Features/Projects/Components/ProjectTopbar";
 import CalendarTopbar from "../../Features/Calendar/Components/CalendarTopbar";
 
 export default function App() {
@@ -18,36 +16,51 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/createNewUser" element={<CreateNewUser />} />
+
           <Route
             path="/"
             element={
               <ProtectedRoute>
-                <DashboardLayout topBar={<TaskTopbar />}>
-                  <Task />
+                <DashboardLayout topBar={<ProjectTopbar />}>
+                  <ProjectPage />
                 </DashboardLayout>
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="/tasks"
+            path="/projects"
             element={
               <ProtectedRoute>
-                <DashboardLayout topBar={<TaskTopbar />}>
-                  <Task />
+                <DashboardLayout topBar={<ProjectTopbar />}>
+                  <ProjectPage />
                 </DashboardLayout>
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout topBar={<ProjectTopbar />}>
+                  <ProjectPage />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardLayout topBar={<TaskTopbar />}>
-                  <Task />
+                <DashboardLayout topBar={<ProjectTopbar />}>
+                  <ProjectPage />
                 </DashboardLayout>
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/Calendar"
             element={
@@ -58,6 +71,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/calendar"
             element={

@@ -20,9 +20,8 @@ interface CalendarProps {
 }
 
 export const Calendar = ({ initialEvents = [] }: CalendarProps) => {
-  const { Calendar, taskNames } = useCalendarKpi();
-  console.log("Calendar Date", taskNames);
-  console.log("Calendar payload", Calendar);
+  const { taskNames } = useCalendarKpi();
+
   const { isOpen: isOpenCreateTask, closeModal: closeCreateTaskModal } =
     useModal();
 
