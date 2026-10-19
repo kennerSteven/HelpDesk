@@ -31,3 +31,8 @@ export type CreateProjectSchemaType = z.infer<typeof CreateProjectSchema>;
 export type ProjectSchemaType = CreateProjectSchemaType;
 export type ProjectStatus = z.infer<typeof CreateProjectSchema>["status"];
 export type ProjectPriority = z.infer<typeof CreateProjectSchema>["priority"];
+
+export type Filters = {
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+};

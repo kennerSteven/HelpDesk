@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ConnectDb } from "../../../Config/database";
+import { ConnectDb } from "../../../Config/firebase";
 import { GetTasks } from "../../../Services/task.service";
 import "../../../Models/Category";
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { ConnectDb } from "../../../Config/database";
+import { ConnectDb } from "../../../Config/firebase";
 import Task from "../../../Models/Task";
 import { CreateTask } from "../../../Services/task.service";
 import { mockTaskWithoutSteps, mockTaskWithSteps } from "../../mocks/task.mock";
