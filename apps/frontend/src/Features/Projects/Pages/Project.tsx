@@ -11,7 +11,7 @@ import EditTaskModal from "../../Task/Components/EditTaskModal";
 import useEditTask from "../../Task/Hooks/useEditTask";
 import useTaskActions from "../../Task/Hooks/useTaskActions";
 import useTask from "../../Task/Hooks/useTask";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 export default function ProjectPage() {
   const { search, setSearch, activeFilter, setActiveFilter, filteredProjects } =
@@ -20,22 +20,6 @@ export default function ProjectPage() {
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const { Tasks = [] } = useTask();
-
-  // Consolidar todas las tareas conocidas (globales y dentro de proyectos)
-  const allTasks = useMemo(() => {
-    const map = new Map<string, any>();
-    (Tasks || []).forEach((t: any) => {
-      const tid = t._id || t.id;
-      if (tid) map.set(tid, t);
-    });
-    (filteredProjects || []).forEach((p: any) => {
-      (p.tasks || []).forEach((t: any) => {
-        const tid = t._id || t.id;
-        if (tid && !map.has(tid)) map.set(tid, t);
-      });
-    });
-    return Array.from(map.values());
-  }, [Tasks, filteredProjects]);
 
   const {
     isOpen: isCreateTaskOpen,
@@ -55,22 +39,14 @@ export default function ProjectPage() {
     closeToast: closeTaskSuccessToast,
   } = useShowToast();
 
-  const {
-    handleDelete,
-    showDelete,
-    closeDeleteModal,
-    selectedTask: selectedTaskDelete,
-    confirmDeleteTask,
-    showDeleteToast,
-    closeDeleteToast,
-  } = useTaskActions(allTasks);
+  const { handleDelete } = useTaskActions(Tasks ?? []);
 
   const {
     selectedTask: selectedEditTask,
     selectTaskToEdit,
     updatedTask,
   } = useEditTask({
-    tasks: allTasks,
+    tasks: Tasks ?? [],
     closeModal: closeEditTaskModal,
   });
 
@@ -141,7 +117,7 @@ export default function ProjectPage() {
                 <ProjectTasksContainer
                   key={project._id || project.id}
                   project={project}
-                  onDeleteTask={handleDelete}
+                  onDeleteTask={() => handleDelete(id)}
                   onEditTask={(id) => {
                     selectTaskToEdit(id);
                     openEditTaskModal();
@@ -194,54 +170,29 @@ export default function ProjectPage() {
         />
       )}
 
-      {/* Modal para Confirmar Eliminación de Tarea */}
-      {showDelete && selectedTaskDelete && selectedTaskDelete.length > 0 && (
+      {isEditTaskOpen && selectedEditTask && (
         <Modal
           width="low"
-          labelConfirm="Eliminar"
+          labelConfirm="Editar tarea"
           labelCancel="Cancelar"
-          Confirm={() => {
-            const taskToDelete = selectedTaskDelete[0];
-            const targetId = taskToDelete._id || (taskToDelete as any).id;
-            if (targetId) {
-              confirmDeleteTask(targetId);
-            }
-          }}
-          Cancel={closeDeleteModal}
-          closeModal={closeDeleteModal}
-          modalTitle="Eliminar tarea"
-          typeBtnConfirm="button"
+          Confirm={() => {}}
+          Cancel={closeEditTaskModal}
+          closeModal={closeEditTaskModal}
+          modalTitle="Editar tarea"
+          formId="edit-task-form"
           contentModal={
-            <div className="space-y-2 py-1">
-              <p className="text-sm text-slate-600 leading-relaxed">
-                ¿Estás seguro de que deseas eliminar la tarea{" "}
-                <span className="font-semibold text-slate-900">
-                  "{selectedTaskDelete[0].name}"
-                </span>
-                ?
-              </p>
-              <p className="text-xs text-rose-500 font-medium">
-                Esta acción no se puede deshacer y desvinculará la tarea de este proyecto.
-              </p>
-            </div>
+            <EditTaskModal task={selectedEditTask} onSave={updatedTask} />
           }
+          typeBtnConfirm="submit"
         />
       )}
 
-      {/* Toast Flotante Creación */}
+      {/* Toast Flotante */}
       <Toast
         titleToast="Se ha creado una nueva tarea"
         typeToast="success"
         isOpen={showTaskSuccessToast}
         onClose={closeTaskSuccessToast}
-      />
-
-      {/* Toast Flotante Eliminación */}
-      <Toast
-        titleToast="Tarea eliminada correctamente"
-        typeToast="warning"
-        isOpen={showDeleteToast}
-        onClose={closeDeleteToast}
       />
     </div>
   );

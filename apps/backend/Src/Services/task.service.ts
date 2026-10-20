@@ -17,9 +17,7 @@ async function populateCategories(tasks: any[]): Promise<any[]> {
   return tasks.map((task) => {
     const rawCat = task.categoryId;
     const catId =
-      typeof rawCat === "string"
-        ? rawCat
-        : rawCat?._id || rawCat?.id || "";
+      typeof rawCat === "string" ? rawCat : rawCat?._id || rawCat?.id || "";
 
     const populatedCat =
       categoriesMap.get(catId) ||
@@ -112,7 +110,10 @@ async function UpdateTask(id: string, data: Partial<CreateTaskSchemaType>) {
     updatedAt: new Date().toISOString(),
   };
 
-  if (typeof updatePayload.categoryId === "object" && updatePayload.categoryId !== null) {
+  if (
+    typeof updatePayload.categoryId === "object" &&
+    updatePayload.categoryId !== null
+  ) {
     updatePayload.categoryId =
       updatePayload.categoryId._id || updatePayload.categoryId.id;
   }
@@ -138,50 +139,7 @@ async function DeleteTask(id: string) {
     throw new Error("La tarea con el ID proporcionado no existe.");
   }
 
-  const taskData = existingDoc.data();
-  const projectId = taskData?.projectId;
-
   await taskRef.delete();
-
-  if (projectId) {
-    try {
-      const projectRef = db.collection("projects").doc(projectId);
-      const projectDoc = await projectRef.get();
-      if (projectDoc.exists) {
-        const currentTasks: any[] = projectDoc.data()?.tasks || [];
-        const updatedTasks = currentTasks.filter(
-          (t: any) => t !== id && t?._id !== id && t?.id !== id,
-        );
-        await projectRef.update({
-          tasks: updatedTasks,
-          updatedAt: new Date().toISOString(),
-        });
-      }
-    } catch (projectError) {
-      console.error("Error al desvincular tarea del proyecto:", projectError);
-    }
-  }
-
-  // Desvincular de cualquier otro proyecto que contenga esta tarea como referencia
-  try {
-    const projectsSnapshot = await db
-      .collection("projects")
-      .where("tasks", "array-contains", id)
-      .get();
-    for (const pDoc of projectsSnapshot.docs) {
-      const currentTasks: any[] = pDoc.data()?.tasks || [];
-      const updatedTasks = currentTasks.filter(
-        (t: any) => t !== id && t?._id !== id && t?.id !== id,
-      );
-      await pDoc.ref.update({
-        tasks: updatedTasks,
-        updatedAt: new Date().toISOString(),
-      });
-    }
-  } catch (err) {
-    console.error("Error al limpiar referencia de tarea en proyectos:", err);
-  }
-
   return { id };
 }
 

@@ -7,7 +7,6 @@ import type { TaskResponseType } from "@repo/schemas";
 import { deleteTaskService } from "../Services/task.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskKeys } from "../Constants/taskKeys";
-import { projectKeys } from "../../Projects/Constants/projectKeys";
 
 export default function useTaskActions(tasks: TaskResponseType[]) {
   const { useAppForm } = useZodForm();
@@ -44,14 +43,8 @@ export default function useTaskActions(tasks: TaskResponseType[]) {
   };
 
   const handleDelete = (id: string) => {
-    const taskToDelete = safeTasks.find(
-      (task) => (task._id || (task as any).id) === id,
-    );
-    if (!taskToDelete) {
-      setSelectedTask([{ _id: id, name: "esta tarea" } as any]);
-      openDeleteModal();
-      return;
-    }
+    const taskToDelete = safeTasks.find((task) => task._id === id);
+    if (!taskToDelete) return;
     setSelectedTask([taskToDelete]);
     openDeleteModal();
   };
@@ -85,9 +78,6 @@ export default function useTaskActions(tasks: TaskResponseType[]) {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: taskKeys.all,
-      });
-      queryClient.invalidateQueries({
-        queryKey: projectKeys.all,
       });
       closeDeleteModal();
       showToast();
