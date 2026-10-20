@@ -24,3 +24,4 @@ export { default as FilterIcon } from "./FilterIcon";
 export { default as ChevronLeftIcon } from "./ChevronLeftIcon";
 export { default as ChevronRightIcon } from "./ChevronRightIcon";
 export { default as DotsVerticalIcon } from "./DotsVerticalIcon";
+export { default as ClipboardCheckIcon } from "./ClipboardCheckIcon";

@@ -5,6 +5,7 @@ import type { TaskResponseType } from "@repo/schemas";
 import { updateTaskService } from "../Services/task.service";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskKeys } from "../Constants/taskKeys";
+import { projectKeys } from "../../Projects/Constants/projectKeys";
 interface props {
   tasks: TaskResponseType[];
   closeModal: () => void;
@@ -41,6 +42,7 @@ export default function useEditTask({ tasks, closeModal }: props) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: taskKeys.all });
+      queryClient.invalidateQueries({ queryKey: projectKeys.all });
       setSelectedTask(null);
       closeModal();
       showToast();

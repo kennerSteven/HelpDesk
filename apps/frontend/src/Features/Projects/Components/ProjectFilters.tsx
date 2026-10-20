@@ -164,41 +164,6 @@ export default function ProjectFilters({
         </div>
       </div>
 
-      {/* 4. Sección: VENCIMIENTOS */}
-      <div className="space-y-2.5">
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          VENCIMIENTOS
-        </span>
-        <div className="grid grid-cols-3 gap-2">
-          {dueDates.map((item, idx) => (
-            <div
-              key={idx}
-              className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition-all ${
-                item.isAlert
-                  ? "bg-rose-50/40 border-rose-200/90"
-                  : "bg-white border-slate-200/90"
-              }`}
-            >
-              <span
-                className={`text-[11px] font-medium leading-tight ${
-                  item.isAlert
-                    ? "text-rose-600 font-semibold"
-                    : "text-slate-500"
-                }`}
-              >
-                {item.label}
-              </span>
-              <span
-                className={`text-sm font-bold mt-1 leading-tight ${
-                  item.isAlert ? "text-rose-600" : "text-slate-800"
-                }`}
-              >
-                {item.count}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
       {isOpenCreateProject && (
         <Modal
           modalTitle="Crear nuevo proyecto"

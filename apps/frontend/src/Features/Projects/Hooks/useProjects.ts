@@ -32,7 +32,7 @@ export default function useProjects() {
     isError: isErrorFilteredProjects,
     refetch: refetchFilteredProjects,
   } = useQuery({
-    queryKey: [projectKeys.all, activeFilter],
+    queryKey: [...projectKeys.all, activeFilter],
     queryFn: () => getProjectByFilters(finallyFilter),
   });
 

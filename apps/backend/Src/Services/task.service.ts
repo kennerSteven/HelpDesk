@@ -48,6 +48,7 @@ async function CreateTask(data: CreateTaskSchemaType) {
     status: data.status || "PENDING",
     priority: data.priority || "MEDIUM",
     categoryId: catId,
+    projectId: data.projectId || null,
     showSteps: data.showSteps ?? false,
     steps: data.steps || [],
     createdAt: new Date().toISOString(),
@@ -56,6 +57,22 @@ async function CreateTask(data: CreateTaskSchemaType) {
 
   const docRef = await db.collection(COLLECTION_NAME).add(taskPayload);
   const snapshot = await docRef.get();
+
+  if (data.projectId) {
+    try {
+      const projectRef = db.collection("projects").doc(data.projectId);
+      const projectDoc = await projectRef.get();
+      if (projectDoc.exists) {
+        const currentTasks = projectDoc.data()?.tasks || [];
+        await projectRef.update({
+          tasks: [...currentTasks, docRef.id],
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    } catch (projectError) {
+      console.error("Error al asociar tarea al proyecto:", projectError);
+    }
+  }
 
   const createdTask = {
     _id: docRef.id,
@@ -121,7 +138,50 @@ async function DeleteTask(id: string) {
     throw new Error("La tarea con el ID proporcionado no existe.");
   }
 
+  const taskData = existingDoc.data();
+  const projectId = taskData?.projectId;
+
   await taskRef.delete();
+
+  if (projectId) {
+    try {
+      const projectRef = db.collection("projects").doc(projectId);
+      const projectDoc = await projectRef.get();
+      if (projectDoc.exists) {
+        const currentTasks: any[] = projectDoc.data()?.tasks || [];
+        const updatedTasks = currentTasks.filter(
+          (t: any) => t !== id && t?._id !== id && t?.id !== id,
+        );
+        await projectRef.update({
+          tasks: updatedTasks,
+          updatedAt: new Date().toISOString(),
+        });
+      }
+    } catch (projectError) {
+      console.error("Error al desvincular tarea del proyecto:", projectError);
+    }
+  }
+
+  // Desvincular de cualquier otro proyecto que contenga esta tarea como referencia
+  try {
+    const projectsSnapshot = await db
+      .collection("projects")
+      .where("tasks", "array-contains", id)
+      .get();
+    for (const pDoc of projectsSnapshot.docs) {
+      const currentTasks: any[] = pDoc.data()?.tasks || [];
+      const updatedTasks = currentTasks.filter(
+        (t: any) => t !== id && t?._id !== id && t?.id !== id,
+      );
+      await pDoc.ref.update({
+        tasks: updatedTasks,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  } catch (err) {
+    console.error("Error al limpiar referencia de tarea en proyectos:", err);
+  }
+
   return { id };
 }
 

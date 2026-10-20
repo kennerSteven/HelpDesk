@@ -31,9 +31,10 @@ import TaskSteps from "./TaskSteps";
 
 type props = {
   onSuccess: () => void;
+  projectId?: string
 };
 
-export default function CreateTask({ onSuccess }: props) {
+export default function CreateTask({ onSuccess,projectId }: props) {
   const {
     onSubmit,
     register,
@@ -48,7 +49,7 @@ export default function CreateTask({ onSuccess }: props) {
     closeErrorToast,
     showSteps,
     watch,
-  } = useCreateTask({ onSuccess });
+  } = useCreateTask({ onSuccess,projectId });
 
   const { openModal, isOpen, closeModal } = useModal();
   const { categories } = useCategory();

@@ -19,7 +19,7 @@ export const CreateTaskSchema = z.object({
     .string({ message: "La fecha de inicio es obligatoria" })
     .min(1, "La fecha de inicio es obligatoria"),
 
-  status: z.enum(["PENDING", "COMPLETED", "EXPIRED"]),
+  status: z.enum(["PENDING", "COMPLETED", "EXPIRED"]).default("PENDING"),
 
   dateFinish: z
     .string({ message: "La fecha de fin es obligatoria" })
@@ -28,6 +28,7 @@ export const CreateTaskSchema = z.object({
   categoryId: z
     .string({ message: "Seleccione una categoría" })
     .min(1, "Seleccione una categoría"),
+  projectId: z.string().optional(),
   showSteps: z.boolean().optional(),
   steps: z.array(StepSchema).optional(),
 });

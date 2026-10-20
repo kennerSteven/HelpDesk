@@ -1,7 +1,7 @@
 import { apiClient } from "../../../Config/axios";
-import type { TaskResponseType } from "@repo/schemas";
+import type { CreateTaskSchemaType, TaskResponseType } from "@repo/schemas";
 
-export async function createTask(data: TaskResponseType) {
+export async function createTask(data: CreateTaskSchemaType) {
   const response = await apiClient.post("/tasks/createTask", data);
   return response.data;
 }
@@ -23,5 +23,3 @@ export async function deleteTaskService(id: string) {
   const response = await apiClient.delete(`/tasks/deleteTask/${id}`);
   return response.data;
 }
-
-

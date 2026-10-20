@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import CalculateDaysBetween from "../../../Utils/CalculateDaysBetween";
 
 interface TaskCardProps {
@@ -87,12 +87,6 @@ export default React.memo(function TaskCard({
     },
   };
 
-  const currentStatus = statusStyles[normalizedStatus] ?? {
-    label: status || "Pendiente",
-    dotClass: "bg-amber-500",
-    textClass: "text-amber-600",
-    chevronClass: "text-amber-500",
-  };
 
   // Cálculo de tiempo restante relativo
   let daysText = "En 3 días";
@@ -112,10 +106,22 @@ export default React.memo(function TaskCard({
   }
 
   // Subtareas y progreso
-  const totalSteps = steps?.length || 4;
+  const [showSubtasks, setShowSubtasks] = useState(false);
+  const hasSteps = Boolean(steps && steps.length > 0);
+  const totalSteps = steps?.length || 0;
   const completedSteps = steps
     ? steps.filter((s) => s.status === "DONE").length
-    : 1;
+    : 0;
+
+  const isAllCompleted = totalSteps > 0 && totalSteps === completedSteps;
+  const isCompleted = isAllCompleted || normalizedStatus === "COMPLETED";
+
+  const currentStatus = statusStyles[isCompleted ? "COMPLETED" : normalizedStatus] ?? {
+    label: status || "Pendiente",
+    dotClass: "bg-amber-500",
+    textClass: "text-amber-600",
+    chevronClass: "text-amber-500",
+  };
 
   return (
     <article
@@ -124,13 +130,21 @@ export default React.memo(function TaskCard({
       className={`group relative flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-slate-300 hover:shadow-[0_8px_20px_rgba(0,0,0,0.05)] transition-all duration-200 ${
         isSelected
           ? "ring-2 ring-indigo-500 border-indigo-400"
-          : "border-slate-200/90"
+          : isCompleted
+            ? "border-emerald-200/90 bg-emerald-50/15"
+            : "border-slate-200/90"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
       <div>
         {/* Cabecera: Título a la izquierda, Acciones (Editar/Eliminar) a la derecha */}
         <div className="flex items-start justify-between gap-3">
-          <h4 className="text-[17px] font-bold text-slate-900 tracking-tight leading-snug line-clamp-1 flex-1">
+          <h4
+            className={`text-[17px] font-bold tracking-tight leading-snug line-clamp-1 flex-1 transition-all ${
+              isCompleted
+                ? "line-through text-slate-400 decoration-emerald-500/80 decoration-2"
+                : "text-slate-900"
+            }`}
+          >
             {name}
           </h4>
 
@@ -208,7 +222,13 @@ export default React.memo(function TaskCard({
 
         {/* Fila de Descripción */}
         {description && (
-          <p className="text-[14px] text-slate-600 leading-relaxed mt-3 line-clamp-2">
+          <p
+            className={`text-[14px] leading-relaxed mt-3 line-clamp-2 transition-all ${
+              isCompleted
+                ? "line-through text-slate-400 decoration-emerald-500/60"
+                : "text-slate-600"
+            }`}
+          >
             {description}
           </p>
         )}
@@ -261,36 +281,125 @@ export default React.memo(function TaskCard({
           </svg>
         </div>
 
-        {/* Progreso de Subtareas con segmentos tipo cápsula */}
-        <div className="flex items-center gap-2 text-slate-500">
-          <svg
-            className="size-3.5 text-slate-400 stroke-[1.8] shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+        {/* Badge Clickeable para ver Subtareas */}
+        {hasSteps ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSubtasks((prev) => !prev);
+            }}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer border shadow-2xs active:scale-95 ${
+              isAllCompleted
+                ? showSubtasks
+                  ? "bg-emerald-100/90 text-emerald-800 border-emerald-300 ring-2 ring-emerald-500/20"
+                  : "bg-emerald-50 text-emerald-700 border-emerald-200/90 hover:bg-emerald-100/80"
+                : showSubtasks
+                  ? "bg-indigo-50 text-indigo-700 border-indigo-200 ring-2 ring-indigo-500/20"
+                  : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/90 hover:border-slate-300"
+            }`}
+            title="Clic para ver las subtareas"
           >
-            <circle cx="12" cy="12" r="10" />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m9 12 2 2 4-4"
-            />
-          </svg>
-          <span className="text-[12px] font-medium text-slate-600">
-            {completedSteps}/{totalSteps} subtareas
-          </span>
-          <div className="flex items-center gap-1 pl-0.5">
-            {Array.from({ length: totalSteps }).map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full transition-all ${
-                  i < completedSteps ? "w-4 bg-slate-700" : "w-2 bg-slate-200"
+            {isAllCompleted ? (
+              <svg
+                className="size-3.5 text-emerald-600 stroke-[2.4] shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4.5 12.75l6 6 9-13.5"
+                />
+              </svg>
+            ) : (
+              <svg
+                className={`size-3.5 transition-colors ${
+                  showSubtasks ? "text-indigo-600" : "text-slate-500"
                 }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" strokeWidth="1.8" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.8"
+                  d="m9 12 2 2 4-4"
+                />
+              </svg>
+            )}
+            <span>
+              {completedSteps}/{totalSteps} subtareas
+            </span>
+            <svg
+              className={`size-3 transition-transform duration-200 ${
+                showSubtasks
+                  ? isAllCompleted
+                    ? "rotate-180 text-emerald-700"
+                    : "rotate-180 text-indigo-600"
+                  : isAllCompleted
+                    ? "text-emerald-500"
+                    : "text-slate-400"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
               />
-            ))}
+            </svg>
+          </button>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium text-slate-400 bg-slate-50 border border-slate-100">
+            0 subtareas
+          </span>
+        )}
+      </div>
+
+      {/* Lista desplegable de subtareas al hacer clic en el badge */}
+      {showSubtasks && hasSteps && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="mt-3 pt-3 border-t border-dashed border-slate-200 flex flex-col gap-2 transition-all animate-fadeIn"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Subtareas ({completedSteps}/{totalSteps})
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto pr-1 scrollbar-custom">
+            {steps?.map((step, idx) => {
+              const isDone = step.status === "DONE";
+              return (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-2 p-2 rounded-lg text-xs transition-colors ${
+                    isDone
+                      ? "bg-emerald-50/50 text-slate-500"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100/80"
+                  }`}
+                >
+                  <span
+                    className={`leading-snug break-words ${
+                      isDone ? "line-through text-slate-400" : "font-medium"
+                    }`}
+                  >
+                    {step.name}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+      )}
     </article>
   );
 });

@@ -1,5 +1,10 @@
 import TaskCard from "../../Task/Components/TaskCard";
-import { PlusIcon } from "../../../Components/Icons";
+import {
+  PlusIcon,
+  CalendarIcon,
+  CheckIcon,
+  ClipboardCheckIcon,
+} from "../../../Components/Icons";
 import projectColor from "../../../Utils/AssignColor";
 
 export interface ProjectType {
@@ -17,7 +22,7 @@ interface ProjectTasksContainerProps {
   project: ProjectType;
   onDeleteTask?: (taskId: string) => void;
   onEditTask?: (taskId: string) => void;
-  onAddTask?: (projectId?: string) => void;
+  onAddTask?: (projectId?: string, nameProjecto?: string) => void;
 }
 
 const PROJECT_STATUS_CONFIG: Record<
@@ -57,10 +62,11 @@ export default function ProjectTasksContainer({
   onAddTask,
 }: ProjectTasksContainerProps) {
   const tasks = project.tasks || [];
+
   const hasTasks = tasks.length > 0;
   const statusInfo = getProjectStatus(project.status);
   const completedTasksCount = tasks.filter(
-    (t: any) => t.status === "COMPLETED" || t.status === "DONE"
+    (t: any) => t.status === "COMPLETED" || t.status === "DONE",
   ).length;
 
   return (
@@ -96,63 +102,57 @@ export default function ProjectTasksContainer({
 
         {/* Fechas del Proyecto */}
         <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400">
-          <svg
-            className="size-3.5 text-slate-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            />
-          </svg>
+          <CalendarIcon className="size-3.5 text-slate-400" />
           <span>
             {project.dateInit} — {project.dateFinish}
           </span>
         </div>
 
-        {/* Separador sutil */}
-        <hr className="border-slate-100" />
+        {/* Barra divisoria y cabecera de tareas con botón persistente */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Tareas ({tasks.length})
+          </span>
 
-        {/* Contenedor de tareas: 200px fijos por defecto y scroll si excede */}
-        <div className="h-[200px] overflow-y-auto pr-1 flex flex-col gap-3 scrollbar-custom">
+          {onAddTask && (
+            <button
+              type="button"
+              onClick={() => onAddTask(project._id, project.nameProject)}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg shadow-2xs hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all cursor-pointer active:scale-95"
+              title="Añadir tarea a este proyecto"
+            >
+              <PlusIcon className="size-3 text-slate-500" />
+              <span>Añadir tarea</span>
+            </button>
+          )}
+        </div>
+
+        {/* Contenedor de tareas: altura dinámica con scroll suave */}
+        <div className="max-h-[300px] min-h-[170px] overflow-y-auto pr-1 flex flex-col gap-3 scrollbar-custom">
           {hasTasks ? (
-            tasks.map((task: any) => (
-              <TaskCard
-                key={task._id || task.id}
-                id={task._id || task.id}
-                name={task.name}
-                description={task.description}
-                category={task.categoryId?.nameCategory || task.category}
-                status={task.status}
-                steps={task.steps}
-                dateInit={task.dateInit}
-                dateFinish={task.dateFinish}
-                priority={task.priority}
-                onDelete={() => onDeleteTask?.(task._id || task.id)}
-                onEdit={() => onEditTask?.(task._id || task.id)}
-              />
-            ))
+            <>
+              {tasks.map((task: any) => (
+                <TaskCard
+                  key={task._id || task.id}
+                  id={task._id || task.id}
+                  name={task.name}
+                  description={task.description}
+                  category={task.categoryId?.nameCategory || task.category}
+                  status={task.status}
+                  steps={task.steps}
+                  dateInit={task.dateInit}
+                  dateFinish={task.dateFinish}
+                  priority={task.priority}
+                  onDelete={() => onDeleteTask?.(task._id || task.id)}
+                  onEdit={() => onEditTask?.(task._id || task.id)}
+                />
+              ))}
+            </>
           ) : (
-            /* Estado vacío ocupando los 200px completos centrado */
-            <div className="w-full h-full rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-4 flex flex-col items-center justify-center text-center gap-2 transition-colors hover:bg-slate-50/90">
+            /* Estado vacío con botón de acción */
+            <div className="w-full h-full min-h-[160px] rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-4 flex flex-col items-center justify-center text-center gap-2 transition-colors hover:bg-slate-50/90">
               <div className="size-9 rounded-full bg-white border border-slate-200/80 shadow-2xs flex items-center justify-center text-slate-400 shrink-0">
-                <svg
-                  className="size-4 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.8"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                  />
-                </svg>
+                <ClipboardCheckIcon className="size-4 text-slate-400" />
               </div>
 
               <div className="space-y-0.5">
@@ -167,11 +167,11 @@ export default function ProjectTasksContainer({
               {onAddTask && (
                 <button
                   type="button"
-                  onClick={() => onAddTask(project._id)}
-                  className="mt-0.5 inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg shadow-2xs hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer"
+                  onClick={() => onAddTask(project._id, project.nameProject)}
+                  className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg shadow-2xs hover:bg-slate-50 hover:text-slate-900 transition-all cursor-pointer active:scale-95"
                 >
                   <PlusIcon className="size-3 text-slate-500" />
-                  <span>Añadir tarea</span>
+                  <span>Añadir primera tarea</span>
                 </button>
               )}
             </div>
@@ -194,7 +194,16 @@ export default function ProjectTasksContainer({
         </div>
 
         {hasTasks ? (
-          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+          <div
+            className={`flex items-center gap-1.5 text-[11px] font-medium ${
+              completedTasksCount === tasks.length && tasks.length > 0
+                ? "text-emerald-600 font-semibold"
+                : "text-slate-500"
+            }`}
+          >
+            {completedTasksCount === tasks.length && tasks.length > 0 && (
+              <CheckIcon className="size-3.5 text-emerald-500 stroke-[2.4] shrink-0" />
+            )}
             <span>
               {completedTasksCount} de {tasks.length} completadas
             </span>
